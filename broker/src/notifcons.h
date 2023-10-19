@@ -5,6 +5,8 @@
 #ifndef SIMPLEMIDDLEWARE_NOTIFCONS_H
 #define SIMPLEMIDDLEWARE_NOTIFCONS_H
 
-void notify();
+#include "mom.h"
+
+void notify(invocation * inv);
 
 #endif //SIMPLEMIDDLEWARE_NOTIFCONS_H

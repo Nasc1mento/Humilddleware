@@ -6,8 +6,8 @@
 #define SIMPLEMIDDLEWARE_NOTIFENGINE_H
 
 void run();
-void notify();
-void subscribe();
-void unsubiscribe();
+void publish(char * topic, char * msg);
+void subscribe(char * topic);
+void unsubscribe(char * topic);
 
 #endif //SIMPLEMIDDLEWARE_NOTIFENGINE_H

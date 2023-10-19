@@ -7,6 +7,8 @@
 #include <netdb.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "mom.h"
+#include "notifcons.h"
 
 #define PORT "4444"
 #define BACKLOG 10
@@ -17,7 +19,7 @@ void run ()
 {
     struct sockaddr_storage their_addr;
     struct addrinfo hints, *res;
-    socklen_t  addr_size;
+    socklen_t addr_size;
     int status;
     int sockfd, newfd;
     int bytes_recv;
@@ -38,7 +40,6 @@ void run ()
 
     addr_size = sizeof their_addr;
     newfd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
-
     printf("%d", newfd);
     bytes_recv = recv(newfd, buffer, sizeof buffer, 0);
 
@@ -53,14 +54,37 @@ void run ()
     printf("msg: %s", buffer);
 
     close(sockfd);
-}
 
-void notify()
-{
 
 }
 
-void subscribe()
+void publish(char* topic, char * msg)
 {
+    invocation i;
+    i.op = "PUBLISH";
+    i.topic = topic;
+    i.msg = msg;
 
+    notify(&i);
+}
+
+
+void subscribe(char * topic)
+{
+    invocation i;
+    i.op = "SUBSCRIBE";
+    i.topic = topic;
+    i.msg = NULL;
+
+    notify(&i);
+}
+
+void unsubscribe(char * topic)
+{
+    invocation i;
+    i.op = "UNSUBSCRIBE";
+    i.topic = topic;
+    i.msg = NULL;
+
+    notify(&i);
 }
