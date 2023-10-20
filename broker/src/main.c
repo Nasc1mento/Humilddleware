@@ -2,10 +2,9 @@
 // Created by afreis on 10/19/23.
 //
 
-#include "notifengine.h"
+#include "mom.h"
 
-//int main()
-//{
-//    run();
-//    return 0;
-//}
+int main()
+{
+    run();
+}

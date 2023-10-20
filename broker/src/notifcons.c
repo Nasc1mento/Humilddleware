@@ -8,24 +8,8 @@
 #include "notifengine.h"
 #include "submanager.h"
 
-void notify(invocation *inv, int fd) {
-
-   if (inv->op == "SUBSCRIBE")
-   {
-         inssub(inv->topic, fd);
-   }
-    else if (inv->op == "PUBLISH")
-    {
-
-    }
-    else if (inv->op == "UNSUBSCRIBE")
-    {
-
-    }
-    else
-    {
-         printf("Invalid operation");
-    }
+void notify(char * op, char * topic, char * msg, int sockfd)
+{
 
 
 }

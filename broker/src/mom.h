@@ -5,12 +5,9 @@
 #ifndef SIMPLEMIDDLEWARE_MIDDLEWARE_H
 #define SIMPLEMIDDLEWARE_MIDDLEWARE_H
 
-typedef struct {
-    char * op;
-    char * topic;
-    char * msg
-} invocation;
+#include <netinet/in.h>
 
-
+// get instance of socket
+void run();
 
 #endif //SIMPLEMIDDLEWARE_MIDDLEWARE_H
