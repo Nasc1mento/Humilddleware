@@ -7,7 +7,6 @@
 
 #include <netinet/in.h>
 
-// get instance of socket
 void run();
 
 #endif //SIMPLEMIDDLEWARE_MIDDLEWARE_H

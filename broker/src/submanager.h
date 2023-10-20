@@ -5,7 +5,14 @@
 #ifndef SIMPLEMIDDLEWARE_SUBMANAGER_H
 #define SIMPLEMIDDLEWARE_SUBMANAGER_H
 
-void inssub(char * topic, int fd);
-void remsub(char * topic, int fd);
+typedef struct{
+    char * topic;
+    int sockfd;
+    struct sub * next;
+} sub;
+
+void inssub(char * topic, int sockfd);
+void remsub(char * topic, int sockfd);
+sub * get_subs(char * topic);
 
 #endif //SIMPLEMIDDLEWARE_SUBMANAGER_H

@@ -2,13 +2,8 @@
 // Created by afreis on 10/19/23.
 //
 #include <stdio.h>
-#include <sys/socket.h>
-
-
 #include "notifcons.h"
 #include "submanager.h"
-
-#define PORT "4444"
 
 void request(char *op, char *topic, char *msg, int sockfd)
 {
