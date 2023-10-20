@@ -54,6 +54,7 @@ void run() {
     topic = strtok(NULL, " ");
     msg = strtok(NULL, " ");
 
+    printf("op: %s, topic: %s, msg: %s", op, topic, msg);
     request(op, topic, msg, newfd);
 }
 

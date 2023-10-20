@@ -7,6 +7,6 @@
 
 #include "mom.h"
 
-void notify(char * op, char * topic, char * msg, int sockfd);
+void notify(char * topic, char * msg, int sockfd);
 
 #endif //SIMPLEMIDDLEWARE_NOTIFCONS_H

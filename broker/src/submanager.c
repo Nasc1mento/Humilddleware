@@ -55,3 +55,18 @@ sub * get_subs(char * topic)
 {
     return subs;
 }
+
+int is_subscribed(char * topic, int sockfd)
+{
+    sub *temp = subs;
+
+    while (temp != NULL && (strcmp(temp->topic, topic) != 0 || temp->sockfd != sockfd)) {
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        return 0;
+    }
+
+    return 1;
+}
