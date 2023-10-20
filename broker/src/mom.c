@@ -2,7 +2,6 @@
 // Created by afreis on 10/19/23.
 //
 
-#include <bits/socket.h>
 #include <sys/socket.h>
 #include <stdio.h>
 #include <stdlib.h>
