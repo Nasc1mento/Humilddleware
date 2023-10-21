@@ -121,6 +121,17 @@ void run() {
         if (!fork()) { // this is the child process
             close(sockfd); // child doesn't need the listener
             //
+            while(1) {
+                int bread = recv(new_fd, buffer, BUFFER, 0);
+                if (bread == 0)
+                    break;
+                if (bread < 0) {
+                    perror("recv");
+                    exit(1);
+                }
+                request(buffer, new_fd);
+            }
+
             if (recv(new_fd, buffer, BUFFER, 0) == -1) {
                 perror("recv");
                 exit(1);

@@ -8,7 +8,8 @@
 
 // TODO: List está resetando sempre que o fd manda um mensagem, não entra no else do inssub
 // TODO: FAZER ACIMA
-
+// Estudar extern e static pra ver se consigo resolver isso
+// Se n der certo, implementar a lista de subs dentro do humilde.c para ver se funciona
 struct sub *subs;
 
 void inssub(char *topic, int sockfd) {
@@ -58,33 +59,7 @@ void remsub(char *topic, int sockfd) {
 }
 
 struct sub *get_subs(char *topic) {
-//    sub * temp = subs;
-//    sub * sub_list = NULL;
-//
-//    while(temp != NULL) {
-//        if (strcmp(temp->topic, topic) == 0) {
-//            if (sub_list == NULL) {
-//                sub_list = malloc(sizeof(sub));
-//                sub_list->topic = malloc(strlen(topic) + 1);
-//                strcpy(sub_list->topic, topic);
-//                sub_list->sockfd = temp->sockfd;
-//                sub_list->next = NULL;
-//            } else {
-//                sub * newsub = malloc(sizeof(sub));
-//                newsub->topic = malloc(strlen(topic) + 1);
-//                strcpy(newsub->topic, topic);
-//                newsub->sockfd = temp->sockfd;
-//                newsub->next = NULL;
-//                sub * temp2 = sub_list;
-//                while (temp2->next != NULL) {
-//                    temp2 = temp2->next;
-//                }
-//                temp2->next = newsub;
-//            }
-//        }
-//        temp = temp->next;
-//    }
-
+    // TODO: retornar subs que tem o topic igual ao passado por parâmetro
     return subs;
 }
 
