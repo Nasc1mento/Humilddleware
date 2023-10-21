@@ -132,13 +132,6 @@ void run() {
                 request(buffer, new_fd);
             }
 
-            if (recv(new_fd, buffer, BUFFER, 0) == -1) {
-                perror("recv");
-                exit(1);
-            }
-
-            request(buffer, new_fd);
-
             close(new_fd);
             exit(0);
 
