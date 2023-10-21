@@ -5,22 +5,22 @@
 #include <malloc.h>
 #include <string.h>
 #include "submanager.h"
-#include <stdio.h>
 
-struct sub *subs = NULL;
+// TODO: List está resetando sempre que o fd manda um mensagem, não entra no else do inssub
+// TODO: FAZER ACIMA
+
+struct sub *subs;
 
 void inssub(char *topic, int sockfd) {
-    // if subs is null, create a new sub and set it to subs
     if (subs == NULL) {
-        printf("NULL\n");
         struct sub *newsub = malloc(sizeof(subs));
         newsub->topic = malloc(strlen(topic) + 1);
         strcpy(newsub->topic, topic);
         newsub->sockfd = sockfd;
         newsub->next = NULL;
         subs = newsub;
-        printf(subs == NULL ? "NULL\n" : "NOT NULL\n");
     } else {
+        printf("inssub else\n");
         struct sub *temp = subs;
         while (temp->next != NULL) {
             temp = temp->next;
@@ -31,7 +31,6 @@ void inssub(char *topic, int sockfd) {
         newsub->sockfd = sockfd;
         newsub->next = NULL;
         temp->next = newsub;
-        printf("Subscribed aaaaaaaaaato %s\n", topic);
     }
 }
 

@@ -5,8 +5,6 @@
 #ifndef SIMPLEMIDDLEWARE_MIDDLEWARE_H
 #define SIMPLEMIDDLEWARE_MIDDLEWARE_H
 
-#include <netinet/in.h>
-
 void run();
 
 #endif //SIMPLEMIDDLEWARE_MIDDLEWARE_H

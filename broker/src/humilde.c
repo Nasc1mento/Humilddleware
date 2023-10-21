@@ -126,23 +126,7 @@ void run() {
                 exit(1);
             }
 
-            char * op = strtok(buffer, " ");
-            if (strcmp(op, "PUBLISH") == 0) {
-                char *topic = strtok(NULL, " ");
-                char *msg = strtok(NULL, " ");
-                printf("publishing %s to %s\n", msg, topic);
-                request(op, topic, msg, new_fd);
-            } else if (strcmp(op, "SUBSCRIBE") == 0) {
-                char *topic = strtok(NULL, " ");
-                printf("subscribing to %s\n", topic);
-                request(op, topic, NULL, new_fd);
-            } else if (strcmp(op, "UNSUBSCRIBE") == 0) {
-                char *topic = strtok(NULL, " ");
-                printf("unsubscribing to %s\n", topic);
-                request(op, topic, NULL, new_fd);
-            } else {
-                printf("Invalid operation");
-            }
+            request(buffer, new_fd);
 
             close(new_fd);
             exit(0);

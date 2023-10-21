@@ -5,6 +5,6 @@
 #ifndef SIMPLEMIDDLEWARE_NOTIFENGINE_H
 #define SIMPLEMIDDLEWARE_NOTIFENGINE_H
 
-void request(char *op, char *topic, char *msg, int sockfd);
+void request(char * buffer, int sockfd);
 
 #endif //SIMPLEMIDDLEWARE_NOTIFENGINE_H
