@@ -12,9 +12,11 @@
 
 #define PORT "4444"
 #define BUFFER 1024
+#define BACKLOG 10
 
 
-void run() {
+void run()
+{
     struct sockaddr_storage their_addr;
     struct addrinfo hints, *res;
     int sockfd, newfd;
@@ -33,12 +35,11 @@ void run() {
 
     bind(sockfd, res->ai_addr, res->ai_addrlen);
 
-    listen(sockfd, 10);
+    listen(sockfd, BACKLOG);
 
 
     addr_size = sizeof their_addr;
     newfd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
-    printf("%d", newfd);
     bytes_recv = recv(newfd, buffer, sizeof buffer, 0);
 
     if (bytes_recv == -1)

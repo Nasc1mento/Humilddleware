@@ -16,8 +16,10 @@ void notify(char * topic, char * msg, int sockfd)
 
     sub *sub_list = get_subs(topic);
 
-    while (sub_list != NULL) {
-        if (sub_list->sockfd != sockfd) {
+    while (sub_list != NULL)
+    {
+        if (sub_list->sockfd != sockfd)
+        {
             send(sub_list->sockfd, msg, strlen(msg), 0);
         }
         sub *to_free = sub_list;

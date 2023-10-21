@@ -6,5 +6,5 @@
 
 int main()
 {
-    run();
+    run_forever();
 }
