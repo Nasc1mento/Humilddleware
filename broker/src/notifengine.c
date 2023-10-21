@@ -6,23 +6,15 @@
 #include "notifcons.h"
 #include "submanager.h"
 
-void request(char *op, char *topic, char *msg, int sockfd)
-{
+void request(char *op, char *topic, char *msg, int sockfd) {
 
-    if (strcmp(op, "SUBSCRIBE") == 0)
-    {
+    if (strcmp(op, "SUBSCRIBE") == 0) {
         inssub(topic, sockfd);
-    }
-    else if (strcmp(op, "PUBLISH") == 0)
-    {
+    } else if (strcmp(op, "PUBLISH") == 0) {
         notify(topic, msg, sockfd);
-    }
-    else if (strcmp(op, "UNSUBSCRIBE") == 0)
-    {
+    } else if (strcmp(op, "UNSUBSCRIBE") == 0) {
         remsub(topic, sockfd);
-    }
-    else
-    {
+    } else {
         printf("Invalid operation");
     }
 

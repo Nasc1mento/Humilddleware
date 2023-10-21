@@ -5,33 +5,39 @@
 #include <malloc.h>
 #include <string.h>
 #include "submanager.h"
+#include <stdio.h>
 
-struct sub * subs;
+struct sub *subs = NULL;
 
-void inssub(char * topic, int sockfd)
-{
+void inssub(char *topic, int sockfd) {
+    // if subs is null, create a new sub and set it to subs
     if (subs == NULL) {
-        sub * newsub = malloc(sizeof(sub));
+        printf("NULL\n");
+        struct sub *newsub = malloc(sizeof(subs));
         newsub->topic = malloc(strlen(topic) + 1);
+        strcpy(newsub->topic, topic);
         newsub->sockfd = sockfd;
         newsub->next = NULL;
         subs = newsub;
+        printf(subs == NULL ? "NULL\n" : "NOT NULL\n");
     } else {
-        sub *temp = subs;
+        struct sub *temp = subs;
         while (temp->next != NULL) {
             temp = temp->next;
         }
-        sub * newsub = malloc(sizeof(sub));
+        struct sub *newsub = malloc(sizeof(subs));
         newsub->topic = malloc(strlen(topic) + 1);
+        strcpy(newsub->topic, topic);
         newsub->sockfd = sockfd;
         newsub->next = NULL;
         temp->next = newsub;
+        printf("Subscribed aaaaaaaaaato %s\n", topic);
     }
 }
 
-void remsub(char * topic, int sockfd) {
-    sub *temp = subs;
-    sub *prev = NULL;
+void remsub(char *topic, int sockfd) {
+    struct sub *temp = subs;
+    struct sub *prev = NULL;
 
     while (temp != NULL && (strcmp(temp->topic, topic) != 0 || temp->sockfd != sockfd)) {
         prev = temp;
@@ -52,46 +58,45 @@ void remsub(char * topic, int sockfd) {
     free(temp);
 }
 
-sub * get_subs(char * topic)
-{
-    sub * temp = subs;
-    sub * sub_list = NULL;
+struct sub *get_subs(char *topic) {
+//    sub * temp = subs;
+//    sub * sub_list = NULL;
+//
+//    while(temp != NULL) {
+//        if (strcmp(temp->topic, topic) == 0) {
+//            if (sub_list == NULL) {
+//                sub_list = malloc(sizeof(sub));
+//                sub_list->topic = malloc(strlen(topic) + 1);
+//                strcpy(sub_list->topic, topic);
+//                sub_list->sockfd = temp->sockfd;
+//                sub_list->next = NULL;
+//            } else {
+//                sub * newsub = malloc(sizeof(sub));
+//                newsub->topic = malloc(strlen(topic) + 1);
+//                strcpy(newsub->topic, topic);
+//                newsub->sockfd = temp->sockfd;
+//                newsub->next = NULL;
+//                sub * temp2 = sub_list;
+//                while (temp2->next != NULL) {
+//                    temp2 = temp2->next;
+//                }
+//                temp2->next = newsub;
+//            }
+//        }
+//        temp = temp->next;
+//    }
 
-    while(temp != NULL) {
-        if (strcmp(temp->topic, topic) == 0) {
-            if (sub_list == NULL) {
-                sub_list = malloc(sizeof(sub));
-                sub_list->topic = malloc(strlen(topic) + 1);
-                strcpy(sub_list->topic, topic);
-                sub_list->sockfd = temp->sockfd;
-                sub_list->next = NULL;
-            } else {
-                sub * newsub = malloc(sizeof(sub));
-                newsub->topic = malloc(strlen(topic) + 1);
-                strcpy(newsub->topic, topic);
-                newsub->sockfd = temp->sockfd;
-                newsub->next = NULL;
-                sub * temp2 = sub_list;
-                while (temp2->next != NULL) {
-                    temp2 = temp2->next;
-                }
-                temp2->next = newsub;
-            }
-        }
-        temp = temp->next;
-    }
+    return subs;
 }
 
-int is_subscribed(char * topic, int sockfd)
-{
-    sub *temp = subs;
+int is_subscribed(char *topic, int sockfd) {
+    struct sub *temp = subs;
 
-    while (temp != NULL && (strcmp(temp->topic, topic) != 0 || temp->sockfd != sockfd))
-    {
+    while (temp != NULL && (strcmp(temp->topic, topic) != 0 || temp->sockfd != sockfd)) {
         temp = temp->next;
     }
 
-    if (temp == NULL) {return 0;}
+    if (temp == NULL) { return 0; }
 
     return 1;
 }

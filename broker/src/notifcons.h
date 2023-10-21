@@ -5,8 +5,8 @@
 #ifndef SIMPLEMIDDLEWARE_NOTIFCONS_H
 #define SIMPLEMIDDLEWARE_NOTIFCONS_H
 
-#include "mom.h"
+#include "humilde.h"
 
-void notify(char * topic, char * msg, int sockfd);
+void notify(char *topic, char *msg, int sockfd);
 
 #endif //SIMPLEMIDDLEWARE_NOTIFCONS_H

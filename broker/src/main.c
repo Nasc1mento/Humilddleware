@@ -2,9 +2,9 @@
 // Created by afreis on 10/19/23.
 //
 
-#include "mom.h"
+#include "humilde.h"
 
-int main()
-{
-    run_forever();
+int main() {
+    run();
+    return 0;
 }
