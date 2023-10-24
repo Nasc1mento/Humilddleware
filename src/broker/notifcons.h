@@ -4,9 +4,8 @@
 
 #ifndef SIMPLEMIDDLEWARE_NOTIFCONS_H
 #define SIMPLEMIDDLEWARE_NOTIFCONS_H
+#include "submanager.h"
 
-#include "humilde.h"
-
-void notify(char *topic, char *msg, int sockfd);
+void notify(char *topic, char *msg, int sockfd, struct sub *subscribers[], int *sub_count);
 
 #endif //SIMPLEMIDDLEWARE_NOTIFCONS_H

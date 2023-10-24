@@ -27,11 +27,13 @@ static void* publisher() {
 }
 
 static void* subscriber() {
-
+    sleep(2);
+    int fd = getfd();
+    sub("topic1", fd);
 }
 
 int main() {
-    pthread_t broker_thread, publisher_thread;
+    pthread_t broker_thread, publisher_thread, subscriber_thread;
 
     if (pthread_create(&broker_thread, NULL, broker, NULL) != 0) {
         perror("pthread:broker");
@@ -43,8 +45,13 @@ int main() {
         exit(1);
     }
 
+//    if (pthread_create(&subscriber_thread, NULL, subscriber, NULL) != 0) {
+//        perror("pthread:subscriber");
+//        exit(1);
+//    }
+
     pthread_join(broker_thread, NULL);
     pthread_join(publisher_thread, NULL);
-
+//    pthread_join(subscriber_thread, NULL);
     return 0;
 }

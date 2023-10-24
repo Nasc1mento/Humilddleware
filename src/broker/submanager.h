@@ -8,15 +8,10 @@
 typedef struct sub {
     char *topic;
     int sockfd;
-    struct sub *next;
 };
 
-void inssub(char *topic, int sockfd);
+void inssub(char *topic, int sockfd, struct sub *subscribers[], int *sub_count);
 
-void remsub(char *topic, int sockfd);
-
-struct sub *get_subs(char *topic);
-
-int is_subscribed(char *topic, int sockfd);
+void unssub(char *topic, int sockfd, struct sub *subscribers[], int *sub_count);
 
 #endif //SIMPLEMIDDLEWARE_SUBMANAGER_H

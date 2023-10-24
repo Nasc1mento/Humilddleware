@@ -7,70 +7,27 @@
 #include "submanager.h"
 
 // TODO: List está resetando sempre que o fd manda um mensagem, não entra no else do inssub
-// TODO: FAZER ACIMA
-// Estudar extern e static pra ver se consigo resolver isso
-// Se n der certo, implementar a lista de subs dentro do humilde.c para ver se funciona
-struct sub *subs;
+// O fork está criando um novo processo que copia a lista de subscribers, mas não está conseguindo alterar a lista do processo pai
+// acho q é isso. Opções: *Pthread* ou SHM
 
-void inssub(char *topic, int sockfd) {
-    if (subs == NULL) {
-        struct sub *newsub = malloc(sizeof(subs));
-        newsub->topic = malloc(strlen(topic) + 1);
-        strcpy(newsub->topic, topic);
-        newsub->sockfd = sockfd;
-        newsub->next = NULL;
-        subs = newsub;
-    } else {
-        printf("inssub else\n");
-        struct sub *temp = subs;
-        while (temp->next != NULL) {
-            temp = temp->next;
+void inssub(char *topic, int sockfd, struct sub *subscribers[], int *sub_count) {
+    struct sub *new_sub = malloc(sizeof(struct sub));
+    new_sub->topic = topic;
+    new_sub->sockfd = sockfd;
+    subscribers[*sub_count] = new_sub;
+    *sub_count+=1;
+    printf("Subscribed to %s\n", topic);
+}
+
+void unssub(char *topic, int sockfd, struct sub *subscribers[], int *sub_count) {
+    int i;
+    for (i = 0; i < sizeof(subscribers); i++) {
+        if (strcmp(subscribers[i]->topic, topic) == 0 && subscribers[i]->sockfd == sockfd) {
+            subscribers[i] = NULL;
+            printf("Unsubscribed from %s\n", topic);
+            *sub_count-=1;
+            return;
         }
-        struct sub *newsub = malloc(sizeof(subs));
-        newsub->topic = malloc(strlen(topic) + 1);
-        strcpy(newsub->topic, topic);
-        newsub->sockfd = sockfd;
-        newsub->next = NULL;
-        temp->next = newsub;
     }
-}
-
-void remsub(char *topic, int sockfd) {
-    struct sub *temp = subs;
-    struct sub *prev = NULL;
-
-    while (temp != NULL && (strcmp(temp->topic, topic) != 0 || temp->sockfd != sockfd)) {
-        prev = temp;
-        temp = temp->next;
-    }
-
-    if (temp == NULL) {
-        return;
-    }
-
-    if (prev == NULL) {
-        subs = temp->next;
-    } else {
-        prev->next = temp->next;
-    }
-
-    free(temp->topic);
-    free(temp);
-}
-
-struct sub *get_subs(char *topic) {
-    // TODO: retornar subs que tem o topic igual ao passado por parâmetro
-    return subs;
-}
-
-int is_subscribed(char *topic, int sockfd) {
-    struct sub *temp = subs;
-
-    while (temp != NULL && (strcmp(temp->topic, topic) != 0 || temp->sockfd != sockfd)) {
-        temp = temp->next;
-    }
-
-    if (temp == NULL) { return 0; }
-
-    return 1;
+    printf("Not subscribed to %s\n", topic);
 }

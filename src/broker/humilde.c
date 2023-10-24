@@ -1,7 +1,6 @@
 //
 // Created by afreis on 10/19/23.
 //
-
 #include <sys/socket.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,6 +14,7 @@
 #include "notifengine.h"
 #include "humilde.h"
 #include "shared/marshaller.h"
+#include "submanager.h"
 
 #define PORT "4444"
 #define BUFFER 1024
@@ -42,6 +42,8 @@ static void *get_in_addr(struct sockaddr *sa) {
 
 // Based on: https://beej.us/guide/bgnet/html/split-wide/client-server-background.html#a-simple-stream-server
 void srh_run() {
+    struct sub sublist[BACKLOG];
+    unsigned int *sub_count = 0;
     int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
     struct addrinfo hints, *servinfo, *p;
     struct sockaddr_storage their_addr; // connector's address information
@@ -130,7 +132,9 @@ void srh_run() {
                 unsigned char *byteArray = malloc(sizeof(unsigned char) * len);
                 unmarshall(buffer, byteArray, strlen(buffer));
                 printf("server: received '%s'\n", buffer);
-                request(buffer, new_fd);
+
+                request(buffer, new_fd, sublist, &sub_count);
+                printf("sub_count: %d\n", sub_count);
             }
 
             close(new_fd);
