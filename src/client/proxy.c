@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <string.h>
+#include <malloc.h>
 #include "proxy.h"
 #include "crh.h"
+#include "shared/marshaller.h"
 
 int getfd() {
-    return run();
+    return crh_run();
 }
 
 void pub(char *topic, char * msg, int sockfd) {

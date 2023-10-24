@@ -14,6 +14,7 @@
 #include <arpa/inet.h>
 #include "notifengine.h"
 #include "humilde.h"
+#include "shared/marshaller.h"
 
 #define PORT "4444"
 #define BUFFER 1024
@@ -31,7 +32,7 @@ void sigchld_handler(int s) {
 
 // Based on: https://beej.us/guide/bgnet/html/split-wide/client-server-background.html#a-simple-stream-server
 // get sockaddr, IPv4 or IPv6:
-void *get_in_addr(struct sockaddr *sa) {
+static void *get_in_addr(struct sockaddr *sa) {
     if (sa->sa_family == AF_INET) {
         return &(((struct sockaddr_in *) sa)->sin_addr);
     }
@@ -40,7 +41,7 @@ void *get_in_addr(struct sockaddr *sa) {
 }
 
 // Based on: https://beej.us/guide/bgnet/html/split-wide/client-server-background.html#a-simple-stream-server
-void run() {
+void srh_run() {
     int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
     struct addrinfo hints, *servinfo, *p;
     struct sockaddr_storage their_addr; // connector's address information
@@ -125,6 +126,10 @@ void run() {
                     perror("recv");
                     exit(1);
                 }
+                size_t len = strlen(buffer);
+                unsigned char *byteArray = malloc(sizeof(unsigned char) * len);
+                unmarshall(buffer, byteArray, strlen(buffer));
+                printf("server: received '%s'\n", buffer);
                 request(buffer, new_fd);
             }
 
