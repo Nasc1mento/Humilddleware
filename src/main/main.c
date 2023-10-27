@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "broker/humilde.h"
+#include "broker/srh.h"
 #include "client/proxy.h"
 
 
@@ -33,25 +33,27 @@ static void* subscriber() {
 }
 
 int main() {
-    pthread_t broker_thread, publisher_thread, subscriber_thread;
-
-    if (pthread_create(&broker_thread, NULL, broker, NULL) != 0) {
-        perror("pthread:broker");
-        exit(1);
-    }
-
-    if (pthread_create(&publisher_thread, NULL, publisher, NULL) != 0) {
-        perror("pthread:publisher");
-        exit(1);
-    }
+//    pthread_t broker_thread, publisher_thread, subscriber_thread;
+//
+//    if (pthread_create(&broker_thread, NULL, broker, NULL) != 0) {
+//        perror("pthread:broker");
+//        exit(1);
+//    }
+//
+//    if (pthread_create(&publisher_thread, NULL, publisher, NULL) != 0) {
+//        perror("pthread:publisher");
+//        exit(1);
+//    }
 
 //    if (pthread_create(&subscriber_thread, NULL, subscriber, NULL) != 0) {
 //        perror("pthread:subscriber");
 //        exit(1);
 //    }
 
-    pthread_join(broker_thread, NULL);
-    pthread_join(publisher_thread, NULL);
+//    pthread_join(broker_thread, NULL);
+//    pthread_join(publisher_thread, NULL);
 //    pthread_join(subscriber_thread, NULL);
+
+    broker();
     return 0;
 }

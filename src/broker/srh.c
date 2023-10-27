@@ -12,7 +12,7 @@
 #include <sys/wait.h>
 #include <arpa/inet.h>
 #include "notifengine.h"
-#include "humilde.h"
+#include "srh.h"
 #include "shared/marshaller.h"
 #include "submanager.h"
 
@@ -128,11 +128,8 @@ void srh_run() {
                     perror("recv");
                     exit(1);
                 }
-                size_t len = strlen(buffer);
-                unsigned char *byteArray = malloc(sizeof(unsigned char) * len);
-                unmarshall(buffer, byteArray, strlen(buffer));
-                printf("server: received '%s'\n", buffer);
 
+                printf("server: received '%s'\n", buffer);
                 request(buffer, new_fd, sublist, &sub_count);
                 printf("sub_count: %d\n", sub_count);
             }
