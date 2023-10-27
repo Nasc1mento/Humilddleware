@@ -21,18 +21,18 @@
 #define BUFFER 1024
 #define BACKLOG 10
 
-struct data {
-    int sockfd;
-    int *sub_count;
-    struct sub *sublist[BACKLOG];
-};
+int sub_count = 0;
+struct sub *subscribers[BACKLOG];
 
 
-static void* listener(void *argv) {
-    struct data *data = (struct data *)argv;
-    int fd = data->sockfd;
+
+static void* listener(void *sockfd) {
+    int fd = *(int *)sockfd;
     char buffer[BUFFER];
 
+    inssub("topic1", fd);
+//    printf("Topic: %s\n", sublist[0]->topic);
+//    printf("Sockfd: %d\n", sublist[0]->sockfd);
     while (1) {
         int bytes_received = recv(fd, buffer, BUFFER, 0);
         if (bytes_received == -1) {
@@ -54,7 +54,7 @@ static void* listener(void *argv) {
         }
 
         printf("Received: %s\n", buffer);
-        request(buffer, fd, data->sublist, data->sub_count);
+        request(buffer, fd);
     }
     return NULL;
 }
@@ -90,13 +90,10 @@ void srh_run() {
     int yes = 1;
     char s[INET6_ADDRSTRLEN];
     int rv;
-    char *buffer[BUFFER];
     struct data *data;
     pthread_t listener_thread;
 
     printf("srh_run\n");
-    data = malloc(sizeof(struct data));
-    data->sub_count = 0;
 
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
@@ -161,9 +158,7 @@ void srh_run() {
         inet_ntop(their_addr.ss_family,get_in_addr((struct sockaddr *) &their_addr),s, sizeof s);
         printf("server: got connection from %s\n", s);
 
-        data->sockfd = new_fd;
-
-        if (pthread_create(&listener_thread, NULL, &listener, (void *)data) != 0) {
+        if (pthread_create(&listener_thread, NULL, &listener, &new_fd) != 0) {
             perror("pthread:listener");
             exit(1);
         }

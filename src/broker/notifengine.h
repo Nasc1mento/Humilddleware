@@ -5,6 +5,6 @@
 #ifndef SIMPLEMIDDLEWARE_NOTIFENGINE_H
 #define SIMPLEMIDDLEWARE_NOTIFENGINE_H
 
-void request(char* buffer, int sockfd, struct sub *subscribers[], int *sub_count);
+void request(char* buffer, int sockfd);
 
 #endif //SIMPLEMIDDLEWARE_NOTIFENGINE_H
