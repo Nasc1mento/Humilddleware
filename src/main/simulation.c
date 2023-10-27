@@ -17,18 +17,18 @@ static void *run_broker(void *args) {
 
 static void *run_subscriber(void *args) {
     sleep(2);
-    int fd = getfd();
-    subscribe("topic1", fd);
+    getfd("127.0.0.1", "4444");
+    subscribe("topico1");
     return NULL;
 }
 
 static void *run_publisher(void *args) {
     sleep(1); // deixar o broker desbrokear
-    int fd = getfd();
+    int fd = getfd("127.0.0.1", "4444");
     while (1 && fd != -1) {
         char *topic = "topic1";
         char *msg = "msg1";
-        publish(topic, msg, fd);
+        publish(topic, msg);
         sleep(1);
     }
     return NULL;

@@ -6,8 +6,8 @@
 
 
 int main() {
-    srh_run();
-//    run_test();
+//    srh_run();
+    run_test();
     return 0;
 
 }

@@ -2,7 +2,7 @@
 #define HUMILDDLEWARE_CLPS_CHR_H
 
 
-int crh_run();
+int crh_run(const char *host, const char *port);
 
 void sendm(int sockfd, char *msg);
 

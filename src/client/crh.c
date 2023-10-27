@@ -8,7 +8,7 @@
 #include <arpa/inet.h>
 #include "crh.h"
 
-#define PORT "4444" // the port client will be connecting to
+ // the port client will be connecting to
 #define MAXDATASIZE 536 // max number of bytes we can get at once
 
 // get sockaddr, IPv4 or IPv6:
@@ -21,19 +21,18 @@ static void *get_in_addr(struct sockaddr *sa) {
 }
 
 // TODO: dar uma olhadinha aqui depois
-int crh_run() {
+int crh_run(const char *host, const char *port) {
     int sockfd;
 
     struct addrinfo hints, *servinfo, *p;
     int rv;
     char s[INET6_ADDRSTRLEN];
-    const char *host = "127.0.0.1"; // Change to const char
 
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
 
-    if ((rv = getaddrinfo(host, PORT, &hints, &servinfo)) != 0) {
+    if ((rv = getaddrinfo(host, port, &hints, &servinfo)) != 0) {
         fprintf(stderr, "getaddrinfo: %s\n",
                 gai_strerror(rv)); // Use gai_strerror to get a string representation of the error
         return 1;

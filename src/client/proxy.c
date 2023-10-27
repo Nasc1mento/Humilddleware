@@ -1,15 +1,25 @@
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include "proxy.h"
 #include "crh.h"
 #include "marshaller.h"
 
-int getfd() {
-    return crh_run();
+int sockfd = -1;
+
+int getfd(const char *ip, const char *port) {
+    return sockfd = crh_run(ip, port);
 }
 
-void publish(char *topic, char *msg, int sockfd) {
+static inline void checkfd() {
+    if (sockfd == -1) {
+        perror("sockfd: Not initialized");
+        exit(1);
+    }
+}
+
+void publish(char *topic, char *msg) {
+    checkfd();
     int len = strlen(topic) + strlen(msg) + 8;
     char *res = malloc(sizeof(char) * len);
     sprintf(res, "%s %s %s", "PUBLISH", topic, msg);
@@ -17,7 +27,8 @@ void publish(char *topic, char *msg, int sockfd) {
     free(res);
 }
 
-void subscribe(char *msg, int sockfd) {
+void subscribe(char *msg) {
+    checkfd();
     int len = strlen(msg) + 10;
     char *res = malloc(sizeof(char) * len);
     sprintf(res, "%s %s", "SUBSCRIBE", msg);
@@ -30,7 +41,8 @@ void subscribe(char *msg, int sockfd) {
     }
 }
 
-void unsubscribe(char *topic, int sockfd) {
+void unsubscribe(char *topic) {
+    checkfd();
     int len = strlen(topic) + 12;
     char *res = malloc(sizeof(char) * len);
     sprintf(res, "%s %s", "UNSUBSCRIBE", topic);
