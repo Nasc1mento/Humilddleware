@@ -11,14 +11,54 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <arpa/inet.h>
-#include "notifengine.h"
+#include <pthread.h>
 #include "srh.h"
 #include "shared/marshaller.h"
 #include "submanager.h"
+#include "notifengine.h"
 
 #define PORT "4444"
 #define BUFFER 1024
 #define BACKLOG 10
+
+struct data {
+    int sockfd;
+    int *sub_count;
+    struct sub *sublist[BACKLOG];
+};
+
+
+static void* listener(void *argv) {
+    struct data *data = (struct data *)argv;
+    int fd = data->sockfd;
+    char buffer[BUFFER];
+
+    while (1) {
+        int bytes_received = recv(fd, buffer, BUFFER, 0);
+        if (bytes_received == -1) {
+            perror("recv");
+            close(fd);
+            break;
+        }
+
+        if (bytes_received == 0) {
+            printf("Connection closed by the client\n");
+            close(fd);
+            break;
+        }
+
+        if (strcmp(buffer, "exit") == 0) {
+            printf("Exiting...\n");
+            close(fd);
+            break;
+        }
+
+        printf("Received: %s\n", buffer);
+        request(buffer, fd, data->sublist, data->sub_count);
+    }
+    return NULL;
+}
+
 
 // Based on: https://beej.us/guide/bgnet/html/split-wide/client-server-background.html#a-simple-stream-server
 void sigchld_handler(int s) {
@@ -42,8 +82,6 @@ static void *get_in_addr(struct sockaddr *sa) {
 
 // Based on: https://beej.us/guide/bgnet/html/split-wide/client-server-background.html#a-simple-stream-server
 void srh_run() {
-    struct sub sublist[BACKLOG];
-    unsigned int *sub_count = 0;
     int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
     struct addrinfo hints, *servinfo, *p;
     struct sockaddr_storage their_addr; // connector's address information
@@ -53,6 +91,12 @@ void srh_run() {
     char s[INET6_ADDRSTRLEN];
     int rv;
     char *buffer[BUFFER];
+    struct data *data;
+    pthread_t listener_thread;
+
+    printf("srh_run\n");
+    data = malloc(sizeof(struct data));
+    data->sub_count = 0;
 
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
@@ -117,30 +161,12 @@ void srh_run() {
         inet_ntop(their_addr.ss_family,get_in_addr((struct sockaddr *) &their_addr),s, sizeof s);
         printf("server: got connection from %s\n", s);
 
-        if (!fork()) { // this is the child process
-            close(sockfd); // child doesn't need the listener
-            //
-            while(1) {
-                int bread = recv(new_fd, buffer, BUFFER, 0);
-                if (bread == 0)
-                    break;
-                if (bread < 0) {
-                    perror("recv");
-                    exit(1);
-                }
+        data->sockfd = new_fd;
 
-                printf("server: received '%s'\n", buffer);
-                request(buffer, new_fd, sublist, &sub_count);
-                printf("sub_count: %d\n", sub_count);
-            }
-
-            close(new_fd);
-            exit(0);
-
-            //
+        if (pthread_create(&listener_thread, NULL, &listener, (void *)data) != 0) {
+            perror("pthread:listener");
+            exit(1);
         }
-        close(new_fd);  // parent doesn't need this
     }
 }
-
 
