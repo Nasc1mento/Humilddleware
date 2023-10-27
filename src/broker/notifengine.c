@@ -5,7 +5,7 @@
 #include <string.h>
 #include "notifcons.h"
 #include "submanager.h"
-#include "util.h"
+#include "subscription.h"
 
 void request(char* buffer, int sockfd) {
     char *op = strtok(buffer, " ");
@@ -13,7 +13,6 @@ void request(char* buffer, int sockfd) {
         char *topic = strtok(NULL, " ");
         inssub(topic, sockfd);
     } else if (strcmp(op, "PUBLISH") == 0) {
-        printf("Published: \n" );
         char *topic = strtok(NULL, " ");
         char *msg = strtok(NULL, " ");
         notify(topic, msg, sockfd);

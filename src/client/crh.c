@@ -9,7 +9,7 @@
 #include "crh.h"
 
 #define PORT "4444" // the port client will be connecting to
-#define MAXDATASIZE 30 // max number of bytes we can get at once
+#define MAXDATASIZE 536 // max number of bytes we can get at once
 
 // get sockaddr, IPv4 or IPv6:
 static void *get_in_addr(struct sockaddr *sa) {
@@ -70,12 +70,13 @@ void sendm (int sockfd, char * msg) {
 
 char * recvm(int sockfd) {
     int numbytes;
-    char buf[MAXDATASIZE];
-    if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
+    char * buf = malloc(sizeof(char) * MAXDATASIZE);
+    if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1) {
         perror("recv");
         exit(1);
     }
     buf[numbytes] = '\0';
+
     return buf;
 }
 

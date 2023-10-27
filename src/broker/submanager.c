@@ -5,8 +5,11 @@
 #include <malloc.h>
 #include <string.h>
 #include "submanager.h"
-#include "util.h"
+#include "subscription.h"
 
+
+int sub_count = 0;
+struct sub *subscribers[BACKLOG];
 
 void inssub(char *topic, int sockfd) {
     printf("Inssub\n");

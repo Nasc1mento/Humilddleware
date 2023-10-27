@@ -14,25 +14,18 @@
 #include <pthread.h>
 #include "srh.h"
 #include "shared/marshaller.h"
-#include "submanager.h"
 #include "notifengine.h"
+#include "subscription.h"
+#include "submanager.h"
 
 #define PORT "4444"
 #define BUFFER 1024
-#define BACKLOG 10
-
-int sub_count = 0;
-struct sub *subscribers[BACKLOG];
-
 
 
 static void* listener(void *sockfd) {
     int fd = *(int *)sockfd;
     char buffer[BUFFER];
 
-    inssub("topic1", fd);
-//    printf("Topic: %s\n", sublist[0]->topic);
-//    printf("Sockfd: %d\n", sublist[0]->sockfd);
     while (1) {
         int bytes_received = recv(fd, buffer, BUFFER, 0);
         if (bytes_received == -1) {
@@ -53,7 +46,6 @@ static void* listener(void *sockfd) {
             break;
         }
 
-        printf("Received: %s\n", buffer);
         request(buffer, fd);
     }
     return NULL;

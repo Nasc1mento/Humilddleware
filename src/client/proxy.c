@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
+#include <sys/socket.h>
 #include "proxy.h"
 #include "crh.h"
 #include "shared/marshaller.h"
@@ -9,7 +10,7 @@ int getfd() {
     return crh_run();
 }
 
-void pub(char *topic, char * msg, int sockfd) {
+void publish(char *topic, char * msg, int sockfd) {
     int len = strlen(topic) + strlen(msg) + 8;
     char * res = malloc(sizeof(char) * len);
     sprintf(res, "%s %s %s", "PUBLISH", topic, msg);
@@ -17,15 +18,20 @@ void pub(char *topic, char * msg, int sockfd) {
     free(res);
 }
 
-void sub(char *msg, int sockfd) {
+void subscribe(char *msg, int sockfd) {
     int len = strlen(msg) + 10;
     char *res = malloc(sizeof(char) * len);
     sprintf(res, "%s %s", "SUBSCRIBE", msg);
     sendm(sockfd, res);
-    free(res);
+    while (1) {
+        char * r = recvm(sockfd);
+        if (msg != NULL) {
+            printf("%s\n", r);
+        }
+    }
 }
 
-void unsub(char * topic, int sockfd) {
+void unsubscribe(char * topic, int sockfd) {
     int len = strlen(topic) + 12;
     char *res = malloc(sizeof(char) * len);
     sprintf(res, "%s %s", "UNSUBSCRIBE", topic);
