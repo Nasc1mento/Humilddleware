@@ -44,7 +44,6 @@ static void* listener(void *sockfd) {
             close(fd);
             break;
         }
-
         request(buffer, fd);
     }
     return NULL;
