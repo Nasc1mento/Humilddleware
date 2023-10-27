@@ -7,10 +7,10 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "broker/srh.h"
-#include "client/proxy.h"
+#include "srh.h"
+#include "proxy.h"
 
-static void* run_broker(void* args) {
+static void *run_broker(void *args) {
     srh_run();
     return NULL;
 }

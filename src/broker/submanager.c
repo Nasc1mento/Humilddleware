@@ -19,7 +19,7 @@ void inssub(char *topic, int sockfd) {
             subscribers[i] = malloc(sizeof(struct sub));
             subscribers[i]->topic = topic;
             subscribers[i]->sockfd = sockfd;
-            sub_count+=1;
+            sub_count += 1;
             return;
         }
     }
@@ -31,7 +31,7 @@ void unssub(char *topic, int sockfd) {
     for (i = 0; i < sizeof(subscribers); i++) {
         if (strcmp(subscribers[i]->topic, topic) == 0 && subscribers[i]->sockfd == sockfd) {
             subscribers[i] = NULL;
-            sub_count-=1;
+            sub_count -= 1;
             printf("Unsubscribed from %s\n", topic);
             return;
         }

@@ -14,10 +14,10 @@
 // get sockaddr, IPv4 or IPv6:
 static void *get_in_addr(struct sockaddr *sa) {
     if (sa->sa_family == AF_INET) {
-        return &(((struct sockaddr_in*)sa)->sin_addr);
+        return &(((struct sockaddr_in *) sa)->sin_addr);
     }
 
-    return &(((struct sockaddr_in6*)sa)->sin6_addr);
+    return &(((struct sockaddr_in6 *) sa)->sin6_addr);
 }
 
 // TODO: dar uma olhadinha aqui depois
@@ -34,7 +34,8 @@ int crh_run() {
     hints.ai_socktype = SOCK_STREAM;
 
     if ((rv = getaddrinfo(host, PORT, &hints, &servinfo)) != 0) {
-        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv)); // Use gai_strerror to get a string representation of the error
+        fprintf(stderr, "getaddrinfo: %s\n",
+                gai_strerror(rv)); // Use gai_strerror to get a string representation of the error
         return 1;
     }
 
@@ -52,7 +53,7 @@ int crh_run() {
     }
 
     printf("client: connected\n");
-    inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr), s, sizeof s);
+    inet_ntop(p->ai_family, get_in_addr((struct sockaddr *) p->ai_addr), s, sizeof s);
     printf("client: connecting to %s\n", s);
 
     freeaddrinfo(servinfo); // all done with this structure
@@ -60,7 +61,7 @@ int crh_run() {
     return sockfd;
 }
 
-void sendm (int sockfd, char * msg) {
+void sendm(int sockfd, char *msg) {
     int numbytes;
     if ((numbytes = send(sockfd, msg, strlen(msg), 0)) == -1) {
         perror("send");
@@ -68,9 +69,9 @@ void sendm (int sockfd, char * msg) {
     }
 }
 
-char * recvm(int sockfd) {
+char *recvm(int sockfd) {
     int numbytes;
-    char * buf = malloc(sizeof(char) * MAXDATASIZE);
+    char *buf = malloc(sizeof(char) * MAXDATASIZE);
     if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1) {
         perror("recv");
         exit(1);

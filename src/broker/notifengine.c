@@ -5,9 +5,8 @@
 #include <string.h>
 #include "notifcons.h"
 #include "submanager.h"
-#include "subscription.h"
 
-void request(char* buffer, int sockfd) {
+void request(char *buffer, int sockfd) {
     char *op = strtok(buffer, " ");
     if (strcmp(op, "SUBSCRIBE") == 0) {
         char *topic = strtok(NULL, " ");

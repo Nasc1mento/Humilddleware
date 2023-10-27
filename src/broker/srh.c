@@ -13,10 +13,9 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include "srh.h"
-#include "shared/marshaller.h"
+#include "marshaller.h"
 #include "notifengine.h"
 #include "subscription.h"
-#include "submanager.h"
 
 #define PORT "4444"
 #define BUFFER 1024
