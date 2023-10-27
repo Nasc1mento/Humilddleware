@@ -44,6 +44,7 @@ static void* listener(void *sockfd) {
             close(fd);
             break;
         }
+        printf("Received: %s\n", buffer);
         request(buffer, fd);
     }
     return NULL;
