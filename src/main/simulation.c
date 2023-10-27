@@ -43,10 +43,10 @@ void run_test() {
         exit(1);
     }
 
-    if (pthread_create(&publisher_thread, NULL, run_publisher, NULL) != 0) {
-        perror("pthread:publisher");
-        exit(1);
-    }
+//    if (pthread_create(&publisher_thread, NULL, run_publisher, NULL) != 0) {
+//        perror("pthread:publisher");
+//        exit(1);
+//    }
 
     if (pthread_create(&subscriber_thread, NULL, run_subscriber, NULL) != 0) {
         perror("pthread:subscriber");
@@ -54,6 +54,6 @@ void run_test() {
     }
 
     pthread_join(broker_thread, NULL);
-    pthread_join(publisher_thread, NULL);
+//    pthread_join(publisher_thread, NULL);
     pthread_join(subscriber_thread, NULL);
 }

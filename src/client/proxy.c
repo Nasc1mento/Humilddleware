@@ -2,13 +2,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include "proxy.h"
-#include "crh.h"
-#include "marshaller.h"
 
 int sockfd = -1;
 
-int getfd(const char *ip, const char *port) {
-    return sockfd = crh_run(ip, port);
+int getfd(const char host[INET6_ADDRSTRLEN], const char port[6]) {
+    return sockfd = crh_run(host, port);
 }
 
 static inline void checkfd() {
@@ -20,31 +18,27 @@ static inline void checkfd() {
 
 void publish(char *topic, char *msg) {
     checkfd();
-    int len = strlen(topic) + strlen(msg) + 8;
-    char *res = malloc(sizeof(char) * len);
+    char res[MAXDATASIZE];
     sprintf(res, "%s %s %s", "PUBLISH", topic, msg);
     sendm(sockfd, res);
     free(res);
 }
 
-void subscribe(char *msg) {
+void subscribe(char *topic) {
     checkfd();
-    int len = strlen(msg) + 10;
-    char *res = malloc(sizeof(char) * len);
-    sprintf(res, "%s %s", "SUBSCRIBE", msg);
+    char res[MAXDATASIZE];
+    sprintf(res, "%s %s", "SUBSCRIBE", topic);
     sendm(sockfd, res);
+    char buf[MAXDATASIZE];
     while (1) {
-        char *r = recvm(sockfd);
-        if (msg != NULL) {
-            printf("%s\n", r);
-        }
+        recvm(sockfd, buf);
+        printf("%s\n", buf);
     }
 }
 
 void unsubscribe(char *topic) {
     checkfd();
-    int len = strlen(topic) + 12;
-    char *res = malloc(sizeof(char) * len);
+    char res[MAXDATASIZE];
     sprintf(res, "%s %s", "UNSUBSCRIBE", topic);
     sendm(sockfd, res);
     free(res);

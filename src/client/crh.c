@@ -8,8 +8,8 @@
 #include <arpa/inet.h>
 #include "crh.h"
 
- // the port client will be connecting to
-#define MAXDATASIZE 536 // max number of bytes we can get at once
+// the port client will be connecting to
+ // max number of bytes we can get at once
 
 // get sockaddr, IPv4 or IPv6:
 static void *get_in_addr(struct sockaddr *sa) {
@@ -20,8 +20,7 @@ static void *get_in_addr(struct sockaddr *sa) {
     return &(((struct sockaddr_in6 *) sa)->sin6_addr);
 }
 
-// TODO: dar uma olhadinha aqui depois
-int crh_run(const char *host, const char *port) {
+int crh_run(const char host[INET6_ADDRSTRLEN], const char port[6]) {
     int sockfd;
 
     struct addrinfo hints, *servinfo, *p;
@@ -68,15 +67,12 @@ void sendm(int sockfd, char *msg) {
     }
 }
 
-char *recvm(int sockfd) {
+void recvm(int sockfd, char buf[MAXDATASIZE]) {
     int numbytes;
-    char *buf = malloc(sizeof(char) * MAXDATASIZE);
-    if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1) {
+    if ((numbytes = recv(sockfd, buf, MAXDATASIZE - 1, 0)) == -1) {
         perror("recv");
         exit(1);
     }
     buf[numbytes] = '\0';
-
-    return buf;
 }
 
