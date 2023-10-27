@@ -2,8 +2,8 @@
 #include "ClientProxy.h"
 
 
-const char *ssid = "Fabi_MauricioWeb";
-const char *password = "19602019";
+const char *ssid = "";
+const char *password = "";
 
 
 const char *host = "192.168.0.117";
