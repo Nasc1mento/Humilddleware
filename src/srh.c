@@ -13,7 +13,6 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include "srh.h"
-#include "marshaller.h"
 #include "notifengine.h"
 #include "subscription.h"
 
@@ -24,7 +23,6 @@
 static void* listener(void *sockfd) {
     int fd = *(int *)sockfd;
     char buffer[BUFFER];
-
     while (1) {
         int bytes_received = recv(fd, buffer, BUFFER, 0);
         if (bytes_received == -1) {
@@ -44,6 +42,8 @@ static void* listener(void *sockfd) {
             close(fd);
             break;
         }
+        buffer[bytes_received] = '\0';
+        strtok(buffer, "\n");
         printf("Received: %s\n", buffer);
         request(buffer, fd);
     }

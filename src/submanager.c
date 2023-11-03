@@ -9,16 +9,16 @@
 
 
 int sub_count = 0;
-struct sub *subscribers[BACKLOG];
+struct sub *subscribers[BACKLOG] = {NULL};
 
 void inssub(char *topic, int sockfd) {
     printf("Inssub\n");
     int i;
-    for (i = 0; i < sizeof(subscribers); i++) {
+    for (i = 0; i < BACKLOG; i++) {
         if (subscribers[i] == NULL) {
-            subscribers[i] = malloc(sizeof(struct sub));
-            subscribers[i]->topic = topic;
+            subscribers[i] = (struct sub*)malloc(sizeof(struct sub));
             subscribers[i]->sockfd = sockfd;
+            subscribers[i]->topic = strdup(topic);
             sub_count += 1;
             return;
         }

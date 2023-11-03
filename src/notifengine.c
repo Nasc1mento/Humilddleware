@@ -10,6 +10,7 @@ void request(char *buffer, int sockfd) {
     char *op = strtok(buffer, " ");
     if (strcmp(op, "SUBSCRIBE") == 0) {
         char *topic = strtok(NULL, " ");
+        printf("Topic: %s\n", topic);
         inssub(topic, sockfd);
     } else if (strcmp(op, "PUBLISH") == 0) {
         char *topic = strtok(NULL, " ");
