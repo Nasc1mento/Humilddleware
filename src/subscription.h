@@ -5,15 +5,18 @@
 #ifndef HUMILDDLEWARE_SUBSCRIPTION_H
 #define HUMILDDLEWARE_SUBSCRIPTION_H
 
-#define BACKLOG 100
-
-struct sub {
-    char *topic;
-    int sockfd;
+struct subscriber {
+    int fd;
+    struct subscriber *next;
 };
 
-extern int sub_count;
-extern struct sub *subscribers[BACKLOG];
+struct topic {
+    char *name;
+    struct subscriber *sub_list;
+    struct topic *next;
+};
+
+extern struct topic *topics;
 
 
 #endif //HUMILDDLEWARE_SUBSCRIPTION_H

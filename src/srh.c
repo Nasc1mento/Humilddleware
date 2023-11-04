@@ -14,10 +14,10 @@
 #include <pthread.h>
 #include "srh.h"
 #include "notifengine.h"
-#include "subscription.h"
 
 #define PORT "4444"
 #define BUFFER 1024
+#define BACKLOG 10
 
 
 static void* listener(void *sockfd) {
