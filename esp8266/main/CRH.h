@@ -6,7 +6,7 @@
 #define HUMILDDLEWARE_CRH_H
 #define MAXDATASIZE 536
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
 
 
 

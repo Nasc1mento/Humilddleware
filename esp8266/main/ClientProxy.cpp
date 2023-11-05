@@ -1,11 +1,6 @@
-#include "core_esp8266_features.h"
-#include <cstdio>
 //
 // Created by afreis on 10/27/23.
 //
-
-
-
 #include "ClientProxy.h"
 #include "CRH.h"
 
@@ -36,6 +31,7 @@ void ClientProxy::subscribe(char *topic)
   {
     char buf[MAXDATASIZE];
     this->crh.recv(buf);
+    Serial.println(buf);
   }
 }
 
