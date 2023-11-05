@@ -57,7 +57,27 @@ void inssub(char *topicname, int sockfd) {
 }
 
 void unssub(char *topic, int sockfd) {
-
+    struct topic* currenttopic = topics;
+    while (currenttopic != NULL) {
+        if (strcmp(currenttopic->name, topic) == 0) {
+            struct subscriber* current_sub = currenttopic->sub_list;
+            if (current_sub->fd == sockfd) {
+                currenttopic->sub_list = current_sub->next;
+                free(current_sub);
+                return;
+            }
+            while (current_sub->next != NULL) {
+                if (current_sub->next->fd == sockfd) {
+                    struct subscriber* s = current_sub->next;
+                    current_sub->next = current_sub->next->next;
+                    free(s);
+                    return;
+                }
+                current_sub = current_sub->next;
+            }
+        }
+        currenttopic = currenttopic->next;
+    }
 }
 
 
