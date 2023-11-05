@@ -19,10 +19,9 @@ void inssub(char *topicname, int sockfd) {
         s->next = NULL;
         t->sub_list = s;
         topics = t;
-        printf("Subscribed to topic: %s\n",topics->name );
         return;
     }
-    printf("morra\n");
+
     struct topic* currenttopic = topics;
 
     while (currenttopic != NULL) {
@@ -30,7 +29,6 @@ void inssub(char *topicname, int sockfd) {
             struct subscriber* current_sub = currenttopic->sub_list;
             while (current_sub->next != NULL) {
                 if (current_sub->fd == sockfd) {
-                    printf("Already subscribed!!!\n");
                     return;
                 }
                 current_sub = current_sub->next;
@@ -40,9 +38,10 @@ void inssub(char *topicname, int sockfd) {
             s->fd = sockfd;
             s->next = NULL;
             current_sub->next = s;
-            printf("Subscribed aaaaaaaaaaaaaaaaato topic: %s", topicname);
             return;
-        } else if (currenttopic->next == NULL) {
+        }
+
+        if (currenttopic->next == NULL) {
             struct topic* t = (struct topic*)malloc(sizeof(struct topic));
             t->name = strdup(topicname);
             t->next = NULL;
@@ -51,7 +50,6 @@ void inssub(char *topicname, int sockfd) {
             s->next = NULL;
             t->sub_list = s;
             currenttopic->next = t;
-            printf("Subscribed to topic: %s\n",t->name );
             return;
         }
         currenttopic = currenttopic->next;
