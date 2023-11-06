@@ -66,6 +66,7 @@ void unssub(char *topic, int sockfd) {
             if (current_sub->fd == sockfd) {
                 currenttopic->sub_list = current_sub->next;
                 free(current_sub);
+                current_sub = NULL;
                 return;
             }
             while (current_sub->next != NULL) {
@@ -73,6 +74,7 @@ void unssub(char *topic, int sockfd) {
                     struct subscriber* s = current_sub->next;
                     current_sub->next = current_sub->next->next;
                     free(s);
+                    s = NULL;
                     return;
                 }
                 current_sub = current_sub->next;
