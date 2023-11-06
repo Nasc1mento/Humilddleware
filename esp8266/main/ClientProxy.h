@@ -5,12 +5,13 @@
 #ifndef HUMILDDLEWARE_CLIENTPROXY_H
 #define HUMILDDLEWARE_CLIENTPROXY_H
 
+#include <sys/_stdint.h>
 #include "CRH.h"
 
-class ClientProxy{
+class ClientProxy {
   public:
     ClientProxy();
-    void connect(const char* host, const char* port);
+    void connect(const char host[16], const uint16_t port);
     void publish(char *topic, char *msg);
     void subscribe(char *topic);
     void unsubscribe(char *topic);
