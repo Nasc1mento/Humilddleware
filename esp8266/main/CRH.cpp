@@ -20,6 +20,6 @@ void CRH::send(char *message)
 
 void CRH::recv(char *buf)
 {
-  int bytes_read = this->client.readBytes(buf, MAXDATASIZE);
+  int bytes_read = this->client.readBytesUntil('\n',buf, MAXDATASIZE);
   buf[bytes_read] = '\0';
 }

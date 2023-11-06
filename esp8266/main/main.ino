@@ -2,11 +2,11 @@
 #include "ClientProxy.h"
 
 
-const char *ssid = "Fabi_MauricioWeb";
-const char *password = "19602019";
+const char *ssid = "";
+const char *password = "";
 
 
-const char *host = "192.168.0.117";
+const char *host = "192.168.0.120";
 const char *port = "4444";
 
 ClientProxy cp;
@@ -31,6 +31,5 @@ void setup(void)
 
 void loop() 
 {
-  cp.publish("topic1", "mensagem1");
-  delay(1000);
+  cp.subscribe("topic1"); // loop infinito
 }

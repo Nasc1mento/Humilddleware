@@ -56,6 +56,8 @@ void inssub(char *topicname, int sockfd) {
     }
 }
 
+// Função interropendo o programa inexperadamente
+// TODO: Estudar sobre concoorrência e mutex
 void unssub(char *topic, int sockfd) {
     struct topic* currenttopic = topics;
     while (currenttopic != NULL) {
