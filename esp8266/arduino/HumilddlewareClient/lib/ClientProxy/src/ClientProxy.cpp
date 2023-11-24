@@ -1,9 +1,8 @@
 //
 // Created by afreis on 10/27/23.
 //
-#include <sys/_stdint.h>
 #include "ClientProxy.h"
-#include "CRH.h"
+#include "ClientRequestHandler.h"
 
 ClientProxy::ClientProxy() {
 

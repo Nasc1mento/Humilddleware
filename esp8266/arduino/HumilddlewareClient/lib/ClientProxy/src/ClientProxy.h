@@ -5,8 +5,8 @@
 #ifndef HUMILDDLEWARE_CLIENTPROXY_H
 #define HUMILDDLEWARE_CLIENTPROXY_H
 
-#include <sys/_stdint.h>
-#include "CRH.h"
+#include <Arduino.h>
+#include "ClientRequestHandler.h"
 
 class ClientProxy {
   public:
@@ -16,7 +16,7 @@ class ClientProxy {
     void subscribe(char *topic);
     void unsubscribe(char *topic);
   private:
-    CRH crh;
+    ClientRequestHandler crh;
 };
 
 
