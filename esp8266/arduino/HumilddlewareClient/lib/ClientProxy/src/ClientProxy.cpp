@@ -2,10 +2,13 @@
 // Created by afreis on 10/27/23.
 //
 #include "ClientProxy.h"
-#include "ClientRequestHandler.h"
 
 ClientProxy::ClientProxy() {
 
+}
+
+void ClientProxy::run() const {
+    
 }
 
 void ClientProxy::connect(const char host[16], const uint16_t port) {
@@ -35,3 +38,5 @@ void ClientProxy::unsubscribe(char *topic) {
     sprintf(r, "%s %s", "UNSUBSCRIBE", topic);
     this->crh.send(r);
 }
+
+
