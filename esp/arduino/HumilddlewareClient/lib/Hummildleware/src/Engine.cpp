@@ -21,13 +21,14 @@ void Engine::run(struct Invocation invocation) {
 
 void Engine::load_components() {
     struct List* l = this->components;
-    l->component = (Component*) new ClientRequestHandler();
-    l->next = (struct List* ) malloc(sizeof(struct List));
-    l = l->next;
     l->component = (Component*) new ClientProxy();
-    l->next = (struct List* ) malloc(sizeof(struct List));
+    l->next = (struct List*) malloc(sizeof(struct List));
+    l = l->next;
+    l->component = (Component*) new ClientRequestHandler();
+    l->next = (struct List*) malloc(sizeof(struct List));
     l = l->next;
     l->component = NULL;
+    l->next = NULL;
 }
 
 ClientProxy* Engine::starter() {
@@ -36,9 +37,9 @@ ClientProxy* Engine::starter() {
 
 Component* Engine::attached(Component* component) {
     struct List* l = this->components;
-    while (l->component != NULL) {
+    while (l->next != NULL) {
         if (l->component == component) {
-            return l->component;
+            return l->next->component;
         }
         l = l->next;
     }

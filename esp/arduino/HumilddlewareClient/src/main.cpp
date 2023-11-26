@@ -8,8 +8,8 @@
 
 #include "Humilddleware.h"
 
-const char ssid[] = "Fabi_MauricioWeb";
-const char password[] = "19602019";
+const char ssid[] = "";
+const char password[] = "";
 
 void wifi_connect();
 
