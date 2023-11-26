@@ -4,9 +4,11 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
+#include "Invocation.h"
+
 class Component {
     public:
-        virtual void run() const = 0;
+        virtual void run(struct Invocation) = 0;
 };
 
 #endif // COMPONENT_H

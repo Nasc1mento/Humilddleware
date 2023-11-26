@@ -13,12 +13,11 @@
 class ClientRequestHandler: public Component{
   public:
     ClientRequestHandler();
-    void run() const override;
-    void connect(const char host[16], const uint16_t port);
-    void send(char *message);
-    void recv(char *buf);
-  private:
     WiFiClient client;
+    void run(struct Invocation inv) override;   
+    void connect();
+    void send(const char*);
+    void recv(char *buf);
 };
 
 
