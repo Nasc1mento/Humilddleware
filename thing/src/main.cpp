@@ -5,10 +5,9 @@
 #elif defined(ESP32)
 #include <WiFi.h>
 #endif
+
 #include "wifi_info.h"
-
 #include "humilddleware.h"
-
 
 void wifi_connect() {
   WiFi.begin(SSID, PASSWORD);
