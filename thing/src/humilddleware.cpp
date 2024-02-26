@@ -3,40 +3,38 @@
 #include <arpa/inet.h>
 #include "humilddleware.h"
 
-
+#define HOST_ADDR "192.168.0.111"
+#define HOST_PORT 8889
 
 static int _fd = -1;
-static Broker _broker = {0};
 static Config _config = {0};
-
-
 
 int run() {
     struct sockaddr_in dst;
     memset(&dst, 0, sizeof(dst));
 
-    if (inet_pton(AF_INET, _broker.addr, &dst.sin_addr) <= 0) {
-        fprintf(stderr,"Failed to convert IP address: %s:%i",_broker.addr,_broker.port);
-        return -1;
+    if (inet_pton(AF_INET, HOST_ADDR, &dst.sin_addr) <= 0) {
+        fprintf(stderr,"Failed to convert IP address: %s:%i",HOST_ADDR, HOST_PORT);
+        return IPCONV_ERR;
     }
     
     dst.sin_family = AF_INET;
-    dst.sin_port = htons(_broker.port);
+    dst.sin_port = htons(HOST_PORT);
 
     if ((_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP)) < 0) {
         perror("Failed to create socket instance");
-        return -1;
+        return INIT_ERR;
     }
 
     if (connect(_fd, (struct sockaddr *)&dst, sizeof(dst)) != 0) {
-        fprintf(stderr,"Failed to connect to %s:%i", _broker.addr,_broker.port);
+        fprintf(stderr,"Failed to connect to %s:%i", HOST_ADDR, HOST_PORT);
         close(_fd);
-        return -1;
+        return CONN_ERR;
     }
     return _fd;
 }
 
-int send_data(const char *payload, size_t len) {
+static inline int send_data(const char *payload, size_t len) {
     if (!payload) {
         perror("No payload");
         return -1;
@@ -46,45 +44,42 @@ int send_data(const char *payload, size_t len) {
 
     if (b < 0) {
         perror("Failed to send data");
-        return -1;
+        return SEND_ERR;
     }
     
     if ((size_t) b < len) {
         fprintf(stderr, "Imcomplete send, payload length(%i) bigger than specified(%i)",b,len);
-        return -1;
+        return INCOMPLETE_SEND_ERR;
     }
     return HUMILDDLEWARE_OK;
 }
 
-int recv_data(char *buf, size_t len) {
+static inline int recv_data(char *buf, size_t len) {
     ssize_t b = recv(_fd, buf, len - 1, 0);
 
     if (b < 0) {
         perror("Nothing to receive");
-        return -1;
+        return RECV_ERR;
     }
     
     if (b == 0) {
         perror("Connection closed by peer");
-        return -1;
+        return RECV_ERR;
     }
     return HUMILDDLEWARE_OK;
 }
 
 
-int start(Config config, Broker broker) {
-    _broker = broker;
+int start(Config config) {
     _config = config;
-
-    if (run() != -1) {
-        return HUMILDDLEWARE_OK;
-    }
-    return -1;
+    
+    int ret = run();
+    return ret;
 }
 
-Invocation unmarshall(char *payload, size_t len) {
-
-    Operation op = atoi(strtok(payload, " ")); 
+static inline Invocation unmarshall(char *payload, size_t len) {
+    uint8_t code = atoi(strtok(payload, " ")); 
+    Operation op = (Operation) code;
     Invocation invocation;
 
     char *tpc = strtok(payload, " ");
@@ -106,15 +101,14 @@ Invocation unmarshall(char *payload, size_t len) {
     return invocation;
 }
 
-char* marshall(Invocation invocation) {
-
-    char *buf;
+static inline char* marshall(Invocation invocation, char* buf, int size_buf) {
     int r;
+    printf("%i %s %s\n", invocation.op, invocation.tpc, invocation.msg);
 
     switch (invocation.op) {
     case PUBLISH:
-        r = snprintf(
-            buf,sizeof(invocation),"%i %s %s",
+        r = sprintf(
+            buf,"%i %s %s",
             invocation.op, 
             invocation.tpc,
             invocation.msg
@@ -122,8 +116,8 @@ char* marshall(Invocation invocation) {
         break;
     case SUBSCRIBE:
     case UNSUBSCRIBE:
-        r = snprintf(
-            buf, sizeof(invocation),"%i %s",
+        r = sprintf(
+            buf,"%i %s",
             invocation.op, 
             invocation.tpc
         );
@@ -134,42 +128,46 @@ char* marshall(Invocation invocation) {
     return buf;
 }
 
-inline int send_command(Invocation invocation) {
-    char *buf = marshall(invocation);
-    return send_data(buf, strlen(buf));
+static inline int send_command(Invocation invocation) {
+    char buf[MAX_SIZE_BUFFER];
+    marshall(invocation, buf, sizeof(buf));
+
+    int ret = send_data(buf, strlen(buf));
+    return ret;
 }
 
-inline int publish(Invocation invocation) {
+int publish(Invocation invocation) {
     if (
         invocation.msg == NULL ||
         invocation.tpc == NULL
     ) {
         perror("Null value");
-        return -1;
+        return NULL_VALUE_ERR;
     }
+ 
+    int ret = send_command(invocation);
 
-    invocation.op = PUBLISH;
-    return send_command(invocation);
+    return ret;
 }
 
-inline int subscribe(Invocation invocation) {
+int subscribe(Invocation invocation) {
     if (
         invocation.tpc == NULL
     ) {
         perror("Null value");
-        return -1;
+        return NULL_VALUE_ERR;
     }
 
     invocation.op = SUBSCRIBE;
     return send_command(invocation);
 }
 
-inline int unsubscribe(Invocation invocation) {
+int unsubscribe(Invocation invocation) {
      if (
         invocation.tpc == NULL
     ) {
         perror("Null value");
-        return -1;
+        return NULL_VALUE_ERR;
     }
 
     invocation.op = UNSUBSCRIBE;

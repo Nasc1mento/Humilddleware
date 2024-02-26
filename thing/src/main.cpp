@@ -21,12 +21,19 @@ void wifi_connect() {
 }
 
 void setup(void) {
+
+
   Serial.begin(9600);
   wifi_connect();
+  Config config = {.duty_cicle = 60};
+  start(config);
 }
 
 void loop() {
-    
+  Invocation invocation = {.op = PUBLISH,.tpc = "topico", .msg = "mensagem" };
+  publish(invocation);
+
+
   delay(1000);
 }
 
