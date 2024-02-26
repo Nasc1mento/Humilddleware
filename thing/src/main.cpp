@@ -26,11 +26,12 @@ void setup(void) {
   Serial.begin(9600);
   wifi_connect();
   Config config = {.duty_cicle = 60};
-  start(config);
+  Broker broker = {.host = "192.168.0.116",.port = 8889};
+  start(config, broker);
 }
 
 void loop() {
-  Invocation invocation = {.op = PUBLISH,.tpc = "topico", .msg = "mensagem" };
+  Invocation invocation = {.op = PUBLISH,.tpc = "topico", .msg = "mensagem"};
   publish(invocation);
 
 

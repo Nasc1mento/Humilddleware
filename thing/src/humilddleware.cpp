@@ -7,6 +7,7 @@
 #define HOST_PORT 8889
 
 static int _fd = -1;
+static Broker _broker = {0};
 static Config _config = {0};
 
 int run() {
@@ -37,7 +38,7 @@ int run() {
 static inline int send_data(const char *payload, size_t len) {
     if (!payload) {
         perror("No payload");
-        return -1;
+        return NULL_VALUE_ERR;
     }
 
     ssize_t b = send(_fd, payload, len, 0);
@@ -70,9 +71,10 @@ static inline int recv_data(char *buf, size_t len) {
 }
 
 
-int start(Config config) {
+int start(Config config, Broker broker) {
     _config = config;
-    
+    _broker = broker;
+
     int ret = run();
     return ret;
 }
@@ -104,6 +106,7 @@ static inline Invocation unmarshall(char *payload, size_t len) {
 static inline char* marshall(Invocation invocation, char* buf, int size_buf) {
     int r;
     printf("%i %s %s\n", invocation.op, invocation.tpc, invocation.msg);
+    printf("%i\n", _config.duty_cicle);
 
     switch (invocation.op) {
     case PUBLISH:

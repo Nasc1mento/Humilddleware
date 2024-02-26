@@ -16,8 +16,8 @@
 #define NULL_VALUE_ERR 7
 
 struct Broker {
-    char host[16];
-    unsigned int port:8;
+    char *host;
+    int port;
 };
 
 struct Config {
@@ -42,7 +42,7 @@ typedef enum Operation Operarion;
 typedef struct Invocation Invocation;
 
 
-int start(Config);
+int start(Config, Broker);
 int publish(Invocation);
 int subscribe(Invocation);
 int unsubscribe(Invocation);
