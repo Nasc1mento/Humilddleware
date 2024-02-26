@@ -5,6 +5,7 @@
 
 #define MAX_SIZE_BUFFER 512
 #define MAX_ATTEMPTS 3
+
 #define HUMILDDLEWARE_OK 0
 #define IPCONV_ERR 1
 #define INIT_ERR 2
@@ -13,14 +14,15 @@
 #define INCOMPLETE_SEND_ERR 5
 #define RECV_ERR 6
 #define NULL_VALUE_ERR 7
+#define BUFFER_OVERFLOW_ERR 8
 
 struct Broker {
-    char *host;
-    int port;
+    char ip[16];
+    unsigned short int port;
 };
 
 struct Config {
-    uint16_t duty_cicle;
+    unsigned short int duty_cicle;
 };
 
 enum Operation {
@@ -40,9 +42,9 @@ typedef struct Config Config;
 typedef enum Operation Operarion;
 typedef struct Invocation Invocation;
 
-int start(Config, Broker);
-int publish(Invocation);
-int subscribe(Invocation);
-int unsubscribe(Invocation);
+uint8_t start(const char[16], unsigned short int, Config);
+uint8_t publish(Invocation);
+uint8_t subscribe(Invocation);
+uint8_t unsubscribe(Invocation);
 
 #endif

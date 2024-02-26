@@ -12,8 +12,8 @@
 void wifi_connect() {
   WiFi.begin(SSID, PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print("*");
+    delay(500);
+    Serial.print("*");
   }
 
   Serial.print("\nIP address: ");
@@ -26,13 +26,11 @@ void setup(void) {
   Serial.begin(9600);
   wifi_connect();
   Config config = {.duty_cicle = 60};
-  Broker broker = {.host = "192.168.0.116",.port = 8889};
-  start(config, broker);
+  start("192.168.0.111", 8889, config);
 }
 
 void loop() {
-  Invocation invocation = {.op = PUBLISH,.tpc = "topico", .msg = "mensagem"};
-  publish(invocation);
+  publish({.op = PUBLISH,.tpc = "topico", .msg = "mensagem"});
   delay(1000);
 }
 
