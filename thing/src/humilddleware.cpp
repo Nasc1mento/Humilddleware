@@ -74,9 +74,7 @@ static inline int recv_data(char *buf, size_t len) {
 int start(Config config, Broker broker) {
     _config = config;
     _broker = broker;
-
-    int ret = run();
-    return ret;
+    return run();
 }
 
 static inline Invocation unmarshall(char *payload, size_t len) {
@@ -105,14 +103,15 @@ static inline Invocation unmarshall(char *payload, size_t len) {
 
 static inline char* marshall(Invocation invocation, char* buf, int size_buf) {
     int r;
-    printf("%i %s %s\n", invocation.op, invocation.tpc, invocation.msg);
-    printf("%i\n", _config.duty_cicle);
+    printf("BrokerAddr:%s\nBrokerPort:%i",_broker.host, _broker.port);
+    printf("OP:%i\nTPC:%s\nMSG:%s\n", invocation.op, invocation.tpc, invocation.msg);
+    printf("DutyCicle:%i\n", _config.duty_cicle);
 
     switch (invocation.op) {
     case PUBLISH:
         r = sprintf(
-            buf,"%i %s %s",
-            invocation.op, 
+            buf,"OP:%i\nTPC:%s\nMSG:%s\n",
+            invocation.op,
             invocation.tpc,
             invocation.msg
         );
@@ -120,13 +119,12 @@ static inline char* marshall(Invocation invocation, char* buf, int size_buf) {
     case SUBSCRIBE:
     case UNSUBSCRIBE:
         r = sprintf(
-            buf,"%i %s",
-            invocation.op, 
+            buf,"OP:%i\nTPC:%s\n",
+            invocation.op,
             invocation.tpc
         );
         break;
     }
-
     buf[r] = '\0';
     return buf;
 }
@@ -134,9 +132,7 @@ static inline char* marshall(Invocation invocation, char* buf, int size_buf) {
 static inline int send_command(Invocation invocation) {
     char buf[MAX_SIZE_BUFFER];
     marshall(invocation, buf, sizeof(buf));
-
-    int ret = send_data(buf, strlen(buf));
-    return ret;
+    return send_data(buf, strlen(buf));
 }
 
 int publish(Invocation invocation) {
@@ -147,10 +143,7 @@ int publish(Invocation invocation) {
         perror("Null value");
         return NULL_VALUE_ERR;
     }
- 
-    int ret = send_command(invocation);
-
-    return ret;
+    return send_command(invocation);
 }
 
 int subscribe(Invocation invocation) {
@@ -162,6 +155,7 @@ int subscribe(Invocation invocation) {
     }
 
     invocation.op = SUBSCRIBE;
+    invocation.msg = NULL;
     return send_command(invocation);
 }
 
@@ -174,5 +168,6 @@ int unsubscribe(Invocation invocation) {
     }
 
     invocation.op = UNSUBSCRIBE;
+    invocation.msg = NULL;
     return send_command(invocation);
 }

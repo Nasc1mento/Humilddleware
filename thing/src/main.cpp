@@ -33,8 +33,6 @@ void setup(void) {
 void loop() {
   Invocation invocation = {.op = PUBLISH,.tpc = "topico", .msg = "mensagem"};
   publish(invocation);
-
-
   delay(1000);
 }
 

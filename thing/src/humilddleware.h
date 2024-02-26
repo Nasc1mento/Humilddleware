@@ -3,9 +3,8 @@
 
 #include <unistd.h>
 
-#define MAX_SIZE_BUFFER 100
+#define MAX_SIZE_BUFFER 512
 #define MAX_ATTEMPTS 3
-
 #define HUMILDDLEWARE_OK 0
 #define IPCONV_ERR 1
 #define INIT_ERR 2
@@ -40,7 +39,6 @@ typedef struct Broker Broker;
 typedef struct Config Config;
 typedef enum Operation Operarion;
 typedef struct Invocation Invocation;
-
 
 int start(Config, Broker);
 int publish(Invocation);
