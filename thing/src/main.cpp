@@ -1,11 +1,5 @@
-
 #include <Arduino.h>
-#if defined(ESP8266)
-#include <ESP8266WiFi.h>
-#elif defined(ESP32)
 #include <WiFi.h>
-#endif
-
 #include "wifi_info.h"
 #include "humilddleware.h"
 
@@ -30,7 +24,10 @@ void setup(void) {
 }
 
 void loop() {
-  publish({.op = PUBLISH,.tpc = "topico", .msg = "mensagem"});
+
+  Invocation to_send = {.op = PUBLISH,.tpc = "topico", .msg = "mensagem"};
+  publish(to_send);
+  Invocation to_recv = get_message("topico");
   delay(1000);
 }
 

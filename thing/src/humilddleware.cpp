@@ -1,5 +1,4 @@
 #include <sys/socket.h>
-#include <netdb.h>
 #include <arpa/inet.h>
 #include "humilddleware.h"
 
@@ -77,37 +76,34 @@ uint8_t start(const char ip[16], unsigned short int port, Config config) {
 }
 
 static inline Invocation unmarshall(char *payload, size_t len) {
-    uint8_t code = atoi(strtok(payload, " ")); 
-    Operation op = (Operation) code;
+    char tpc[TPC_MAX], msg[MSG_MAX], *token = strtok(payload, "\n");
     Invocation invocation;
 
-    char *tpc = strtok(payload, " ");
-    char *msg;
 
-    switch (op) {
-        case PUBLISH:
-            msg = strtok(payload, " ");
-            invocation.op = op;
-            strcpy(invocation.tpc, tpc);
-            strcpy(invocation.msg, msg);
-            break;
-        case SUBSCRIBE:
-        case UNSUBSCRIBE:
-            invocation.op = op;
-            strcpy(invocation.tpc, tpc);
-            break;
+    while (token != NULL) {
+        if (strncmp(token, "OP:", 3) == 0) {
+            sscanf(token, "OP:%d", &invocation.op);
+        } else if (strncmp(token, "TPC:", 4) == 0) {
+            sscanf(token, "TPC:%s", &tpc);
+            invocation.tpc = tpc;
+        } else if (strncmp(token, "MSG:", 4) == 0) {
+            sscanf(token, "MSG:%s", &msg);
+            msg[strlen(msg)-1] = '\0';
+            invocation.msg = msg;
+        }
+        token = strtok(NULL, "\n");
     }
+    printf("OP:%i\nTPC:%s\nMSG:%s\n",invocation.op, invocation.tpc, invocation.msg);
     return invocation;
 }
 
 static inline uint8_t marshall(Invocation invocation, char* buf, int size_buf) {
     int r = -1;
-    printf("DutyCicle:%i\n", _config.duty_cicle);
 
     switch (invocation.op) {
     case PUBLISH:
         r = sprintf(
-            buf,"OP:%i\nTPC:%s\nMSG:%s\n",
+            buf,"OP:%i\nTPC:%s\nMSG:%s",
             invocation.op,
             invocation.tpc,
             invocation.msg
@@ -116,7 +112,7 @@ static inline uint8_t marshall(Invocation invocation, char* buf, int size_buf) {
     case SUBSCRIBE:
     case UNSUBSCRIBE:
         r = sprintf(
-            buf,"OP:%i\nTPC:%s\n",
+            buf,"OP:%i\nTPC:%s",
             invocation.op,
             invocation.tpc
         );
@@ -129,12 +125,18 @@ static inline uint8_t marshall(Invocation invocation, char* buf, int size_buf) {
     }
 
     buf[r] = '\0';
+    return HUMILDDLEWARE_OK;
 } 
 
 static inline uint8_t send_command(Invocation invocation) {
     char buf[MAX_SIZE_BUFFER];
-    marshall(invocation, buf, sizeof(buf));
-    return send_data(buf, strlen(buf));
+
+    if (marshall(invocation, buf, sizeof(buf)) == HUMILDDLEWARE_OK) {
+        return send_data(buf, strlen(buf));
+    } else {
+        return MARSH_ERROR;
+    }
+   
 }
 
 uint8_t publish(Invocation invocation) {
@@ -157,7 +159,6 @@ uint8_t subscribe(Invocation invocation) {
     }
 
     invocation.op = SUBSCRIBE;
-    invocation.msg = NULL;
     return send_command(invocation);
 }
 
@@ -170,15 +171,11 @@ uint8_t unsubscribe(Invocation invocation) {
     }
 
     invocation.op = UNSUBSCRIBE;
-    invocation.msg = NULL;
     return send_command(invocation);
 }
 
-uint8_t get_message(char *buf, size_t len) {
-    int b = recv_data(buf, len);
-    if (b >= 0 && b < len) {
-        buf[b] = '\0';
-    }
-
-    return b;
+Invocation get_message(const char *tpc) {
+    char buf[MAX_SIZE_BUFFER];
+    recv_data(buf, sizeof(buf));
+    return unmarshall(buf, strlen(buf));
 }

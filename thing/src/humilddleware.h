@@ -3,7 +3,9 @@
 
 #include <unistd.h>
 
-#define MAX_SIZE_BUFFER 512
+#define MAX_SIZE_BUFFER 536
+#define TPC_MAX 100
+#define MSG_MAX 420
 #define MAX_ATTEMPTS 3
 
 #define HUMILDDLEWARE_OK 0
@@ -15,6 +17,8 @@
 #define RECV_ERR 6
 #define NULL_VALUE_ERR 7
 #define BUFFER_OVERFLOW_ERR 8
+#define MARSH_ERROR 9
+#define UNMARSH_ERROR 10
 
 struct Broker {
     char ip[16];
@@ -46,5 +50,6 @@ uint8_t start(const char[16], unsigned short int, Config);
 uint8_t publish(Invocation);
 uint8_t subscribe(Invocation);
 uint8_t unsubscribe(Invocation);
+Invocation get_message(const char*);
 
 #endif
