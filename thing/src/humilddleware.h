@@ -2,10 +2,10 @@
 #define HUMILDDLEWARE_H
 
 #include <unistd.h>
-
-#define MAX_SIZE_BUFFER 536
-#define TPC_MAX 100
-#define MSG_MAX 420
+// Literal Strings = 12 -> OP:\nTPC:\nMSG: + OP = 1 -> 1,2,3
+#define BUF_LEN 536
+#define TPC_LEN 50
+#define MSG_LEN 473
 #define MAX_ATTEMPTS 3
 
 #define HUMILDDLEWARE_OK 0
@@ -21,7 +21,7 @@
 #define UNMARSH_ERROR 10
 
 struct Broker {
-    char ip[16];
+    char ip[IPADDR_STRLEN_MAX];
     unsigned short int port;
 };
 
@@ -37,8 +37,8 @@ enum Operation {
 
 struct Invocation {
     Operation op;
-    char *tpc;
-    char *msg;
+    char tpc[TPC_LEN];
+    char msg[MSG_LEN];
 };
 
 typedef struct Broker Broker;
@@ -46,10 +46,11 @@ typedef struct Config Config;
 typedef enum Operation Operarion;
 typedef struct Invocation Invocation;
 
-uint8_t start(const char[16], unsigned short int, Config);
+uint8_t start(const char *, unsigned short int, Config);
 uint8_t publish(Invocation);
 uint8_t subscribe(Invocation);
 uint8_t unsubscribe(Invocation);
-Invocation get_message(const char*);
+Invocation invocation(const char *, const char *);
+Invocation listen(const char *);
 
 #endif

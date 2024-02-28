@@ -1,0 +1,19 @@
+{
+  "name": "managing_system",
+  "version": "1.0.0",
+  "description": "managing system for humilddleware",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nasc1mento/humilddleware.git"
+  },
+  "author": "nasc1mento",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nasc1mento/humilddleware/issues"
+  },
+  "homepage": "https://github.com/nasc1mento/humilddleware#readme"
+}

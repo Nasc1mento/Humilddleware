@@ -25,9 +25,9 @@ void setup(void) {
 
 void loop() {
 
-  Invocation to_send = {.op = PUBLISH,.tpc = "topico", .msg = "mensagem"};
+  Invocation to_send = invocation("topico", "mensagem");
   publish(to_send);
-  Invocation to_recv = get_message("topico");
+  Invocation to_recv = listen("topico");
   delay(1000);
 }
 

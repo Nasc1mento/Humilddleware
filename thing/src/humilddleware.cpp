@@ -3,7 +3,7 @@
 #include "humilddleware.h"
 
 static int _fd = -1;
-uint8_t attempts;
+uint8_t attempts = 0;
 static Broker _broker = {0};
 static Config _config = {0};
 
@@ -64,11 +64,13 @@ static inline uint8_t recv_data(char *buf, size_t len) {
         perror("Connection closed by peer");
         return RECV_ERR;
     }
+
+    buf[b] = '\0';
+    printf("Num bytes: %i\n", b);
     return HUMILDDLEWARE_OK;
 }
 
-
-uint8_t start(const char ip[16], unsigned short int port, Config config) {
+uint8_t start(const char *ip, unsigned short int port, Config config) {
     _config = config;
     strcpy(_broker.ip, ip);
     _broker.port = port;
@@ -76,20 +78,16 @@ uint8_t start(const char ip[16], unsigned short int port, Config config) {
 }
 
 static inline Invocation unmarshall(char *payload, size_t len) {
-    char tpc[TPC_MAX], msg[MSG_MAX], *token = strtok(payload, "\n");
+    char *token = strtok(payload, "\n");
     Invocation invocation;
-
 
     while (token != NULL) {
         if (strncmp(token, "OP:", 3) == 0) {
             sscanf(token, "OP:%d", &invocation.op);
         } else if (strncmp(token, "TPC:", 4) == 0) {
-            sscanf(token, "TPC:%s", &tpc);
-            invocation.tpc = tpc;
+            sscanf(token, "TPC:%s", &invocation.tpc);
         } else if (strncmp(token, "MSG:", 4) == 0) {
-            sscanf(token, "MSG:%s", &msg);
-            msg[strlen(msg)-1] = '\0';
-            invocation.msg = msg;
+            sscanf(token, "MSG:%s", &invocation.msg);
         }
         token = strtok(NULL, "\n");
     }
@@ -119,7 +117,7 @@ static inline uint8_t marshall(Invocation invocation, char* buf, int size_buf) {
         break;
     }
 
-    if (r < 0 || r >= MAX_SIZE_BUFFER) {
+    if (r < 0 || r >= BUF_LEN) {
         perror("Buffer overflow");
         return BUFFER_OVERFLOW_ERR;
     }
@@ -129,14 +127,9 @@ static inline uint8_t marshall(Invocation invocation, char* buf, int size_buf) {
 } 
 
 static inline uint8_t send_command(Invocation invocation) {
-    char buf[MAX_SIZE_BUFFER];
-
-    if (marshall(invocation, buf, sizeof(buf)) == HUMILDDLEWARE_OK) {
-        return send_data(buf, strlen(buf));
-    } else {
-        return MARSH_ERROR;
-    }
-   
+    char buf[BUF_LEN];
+    marshall(invocation, buf, sizeof(buf));
+    return send_data(buf, strlen(buf)); 
 }
 
 uint8_t publish(Invocation invocation) {
@@ -147,6 +140,8 @@ uint8_t publish(Invocation invocation) {
         perror("Null value");
         return NULL_VALUE_ERR;
     }
+
+    invocation.op = PUBLISH;
     return send_command(invocation);
 }
 
@@ -174,8 +169,15 @@ uint8_t unsubscribe(Invocation invocation) {
     return send_command(invocation);
 }
 
-Invocation get_message(const char *tpc) {
-    char buf[MAX_SIZE_BUFFER];
+Invocation invocation(const char *tpc, const char *msg) {
+    Invocation invocation;
+    tpc == NULL ? strcpy(invocation.tpc, "") : strcpy(invocation.tpc, tpc);
+    msg == NULL ? strcpy(invocation.tpc, "") : strcpy(invocation.msg, msg);
+    return invocation;
+}
+
+Invocation listen(const char *tpc) {
+    char buf[BUF_LEN];
     recv_data(buf, sizeof(buf));
     return unmarshall(buf, strlen(buf));
 }
