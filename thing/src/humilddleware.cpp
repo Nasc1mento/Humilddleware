@@ -3,9 +3,8 @@
 #include "humilddleware.h"
 
 static int _fd = -1;
-uint8_t attempts = 0;
+static uint8_t attempts = 0;
 static Broker _broker = {0};
-static Config _config = {0};
 
 static uint8_t run() {
     struct sockaddr_in dst;
@@ -29,7 +28,7 @@ static uint8_t run() {
         close(_fd);
         return CONN_ERR;
     }
-    return _fd;
+    return HUMILDDLEWARE_OK;
 }
 
 static inline uint8_t send_data(const char *payload, size_t len) {
@@ -70,8 +69,7 @@ static inline uint8_t recv_data(char *buf, size_t len) {
     return HUMILDDLEWARE_OK;
 }
 
-uint8_t start(const char *ip, unsigned short int port, Config config) {
-    _config = config;
+uint8_t start(const char *ip, unsigned short int port) {
     strcpy(_broker.ip, ip);
     _broker.port = port;
     return run();
@@ -85,9 +83,9 @@ static inline Invocation unmarshall(char *payload, size_t len) {
         if (strncmp(token, "OP:", 3) == 0) {
             sscanf(token, "OP:%d", &invocation.op);
         } else if (strncmp(token, "TPC:", 4) == 0) {
-            sscanf(token, "TPC:%s", &invocation.tpc);
+            sscanf(token, "TPC:%[^\n]", &invocation.tpc);
         } else if (strncmp(token, "MSG:", 4) == 0) {
-            sscanf(token, "MSG:%s", &invocation.msg);
+            sscanf(token, "MSG:%[^\n]", &invocation.msg);
         }
         token = strtok(NULL, "\n");
     }
@@ -122,7 +120,6 @@ static inline uint8_t marshall(Invocation invocation, char* buf, int size_buf) {
         return BUFFER_OVERFLOW_ERR;
     }
 
-    buf[r] = '\0';
     return HUMILDDLEWARE_OK;
 } 
 
@@ -172,7 +169,7 @@ uint8_t unsubscribe(Invocation invocation) {
 Invocation invocation(const char *tpc, const char *msg) {
     Invocation invocation;
     tpc == NULL ? strcpy(invocation.tpc, "") : strcpy(invocation.tpc, tpc);
-    msg == NULL ? strcpy(invocation.tpc, "") : strcpy(invocation.msg, msg);
+    msg == NULL ? strcpy(invocation.msg, "") : strcpy(invocation.msg, msg);
     return invocation;
 }
 

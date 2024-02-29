@@ -8,17 +8,17 @@
 #define MSG_LEN 473
 #define MAX_ATTEMPTS 3
 
-#define HUMILDDLEWARE_OK 0
-#define IPCONV_ERR 1
-#define INIT_ERR 2
-#define CONN_ERR 3
-#define SEND_ERR 4
-#define INCOMPLETE_SEND_ERR 5
-#define RECV_ERR 6
-#define NULL_VALUE_ERR 7
-#define BUFFER_OVERFLOW_ERR 8
-#define MARSH_ERROR 9
-#define UNMARSH_ERROR 10
+enum Status {
+    HUMILDDLEWARE_OK = 0,
+    IPCONV_ERR,
+    INIT_ERR,
+    CONN_ERR,
+    SEND_ERR,
+    INCOMPLETE_SEND_ERR,
+    RECV_ERR,
+    NULL_VALUE_ERR,
+    BUFFER_OVERFLOW_ERR,
+};
 
 struct Broker {
     char ip[IPADDR_STRLEN_MAX];
@@ -26,7 +26,7 @@ struct Broker {
 };
 
 struct Config {
-    unsigned short int duty_cicle;
+    unsigned int duty_cicle;
 };
 
 enum Operation {
@@ -46,7 +46,7 @@ typedef struct Config Config;
 typedef enum Operation Operarion;
 typedef struct Invocation Invocation;
 
-uint8_t start(const char *, unsigned short int, Config);
+uint8_t start(const char *, unsigned short int);
 uint8_t publish(Invocation);
 uint8_t subscribe(Invocation);
 uint8_t unsubscribe(Invocation);

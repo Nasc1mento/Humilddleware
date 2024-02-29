@@ -3,7 +3,11 @@ class Adaptpter {
         this.distance = distance;
     }
 
-    
+    get_delay() {
+        if () {
+            
+        }
+    }
 }
 
 module.exports = Adaptpter;
