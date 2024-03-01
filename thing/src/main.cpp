@@ -118,7 +118,9 @@ void setup() {
   humilddleware_connect();
 
   execute();
+
   sleep();
+  
 }
 
 void loop() {}

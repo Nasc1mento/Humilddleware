@@ -74,7 +74,7 @@ HC start(const char *ip, const unsigned short int port) {
 }
 
 static inline Invocation unmarshall(char *payload, size_t len) {
-    const char *token = strtok(payload, "\n");
+    char *token = strtok(payload, "\n");
     Invocation invocation;
 
     while (token != NULL) {
