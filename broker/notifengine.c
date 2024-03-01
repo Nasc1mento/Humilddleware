@@ -5,15 +5,15 @@
 
 void request(char *buffer, int sockfd) {
     char *op = strtok(buffer, " ");
-    if (strcmp(op, "SUBSCRIBE") == 0) {
+    if (strcmp(op, "1") == 0) {
         char *topic = strtok(NULL, " ");
         printf("Topic: %s\n", topic);
         inssub(topic, sockfd);
-    } else if (strcmp(op, "PUBLISH") == 0) {
+    } else if (strcmp(op, "2") == 0) {
         char *topic = strtok(NULL, " ");
         char *msg = strtok(NULL, " ");
         notify(topic, msg, sockfd);
-    } else if (strcmp(op, "UNSUBSCRIBE") == 0) {
+    } else if (strcmp(op, "3") == 0) {
         char *topic = strtok(NULL, " ");
         unssub(topic, sockfd);
     } else {

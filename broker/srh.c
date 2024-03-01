@@ -12,7 +12,7 @@
 #include "srh.h"
 #include "notifengine.h"
 
-#define PORT "4444"
+#define PORT "8889"
 #define BUFFER 1024
 #define BACKLOG 10
 
@@ -40,9 +40,9 @@ static void* listener(void *sockfd) {
             break;
         }
         buffer[bytes_received] = '\0';
-        strtok(buffer, "\n");
+        // strtok(buffer, "\n");
         printf("Received: %s\n", buffer);
-        request(buffer, fd);
+        // request(buffer, fd);
     }
     return NULL;
 }
