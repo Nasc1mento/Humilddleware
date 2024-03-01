@@ -21,12 +21,10 @@ enum Status {
     BUFFER_OVERFLOW_ERR     = 8,
 };
 
-// struct HumilddlewareConnection {
-//     int fd;
-//     unsigned int port;
-//     unsigned int active:1;
-//     char buffer[BUF_LEN];
-// };
+struct HumilddlewareConnection {
+    int fd;
+    uint8_t status;
+};
 
 struct Broker {
     char ip[IPADDR_STRLEN_MAX];
@@ -48,12 +46,13 @@ struct Invocation {
 typedef struct Broker Broker;
 typedef enum Operation Operation;
 typedef struct Invocation Invocation;
+typedef struct HumilddlewareConnection HC;
 
-uint8_t start(const char *, const unsigned short int);
-uint8_t publish(Invocation);
-uint8_t subscribe(Invocation);
-uint8_t unsubscribe(Invocation);
+HC start(const char *, const unsigned short int);
+uint8_t publish(const HC *, Invocation *);
+uint8_t subscribe(const HC *, Invocation *);
+uint8_t unsubscribe(const HC *, Invocation *);
 Invocation invocation(const char *, const char *);
-Invocation listen(const char *);
+Invocation listen(const HC *, const char *);
 
 #endif

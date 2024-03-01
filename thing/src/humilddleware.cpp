@@ -1,40 +1,41 @@
 #include <sys/socket.h>
 #include "humilddleware.h"
 
-static int _fd;
-
-static uint8_t run (Broker broker) {
+static HC run (Broker broker) {
+    HC hc;
     struct sockaddr_in dst;
     memset(&dst, 0, sizeof(dst));
 
     if (inet_pton(AF_INET, broker.ip, &dst.sin_addr) <= 0) {
         fprintf(stderr,"Failed to convert IP address: %s:%i",broker.ip, broker.port);
-        return IPCONV_ERR;
+        hc.status = IPCONV_ERR;
     }
     
     dst.sin_family = AF_INET;
     dst.sin_port = htons(broker.port);
 
-    if ((_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP)) < 0) {
+    if ((hc.fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP)) < 0) {
         perror("Failed to create socket instance");
-        return INIT_ERR;
+        hc.status = INIT_ERR;
     }
 
-    if (connect(_fd, (struct sockaddr *)&dst, sizeof(dst)) != 0) {
+    if (connect(hc.fd, (struct sockaddr *)&dst, sizeof(dst)) != 0) {
         fprintf(stderr,"Failed to connect to %s:%i", broker.ip, broker.port);
-        close(_fd);
-        return CONN_ERR;
+        close(hc.fd);
+        hc.status = CONN_ERR;
+    } else {
+        hc.status = HUMILDDLEWARE_OK;
     }
-    return HUMILDDLEWARE_OK;
+    return hc;
 }
 
-static inline uint8_t send_data(const char *payload, size_t len) {
+static inline uint8_t send_data(const HC *hc, const char *payload, size_t len) {
     if (!payload) {
         perror("No payload");
         return NULL_VALUE_ERR;
     }
 
-    ssize_t b = send(_fd, payload, len, 0);
+    ssize_t b = send(hc->fd, payload, len, 0);
 
     if (b < 0) {
         perror("Failed to send data");
@@ -48,8 +49,8 @@ static inline uint8_t send_data(const char *payload, size_t len) {
     return HUMILDDLEWARE_OK;
 }
 
-static inline uint8_t recv_data(char *buf, size_t len) {
-    ssize_t b = recv(_fd, buf, len - 1, 0);
+static inline uint8_t recv_data(const HC* hc, char *buf, size_t len) {
+    ssize_t b = recv(hc->fd, buf, len - 1, 0);
 
     if (b < 0) {
         perror("Nothing to receive");
@@ -65,7 +66,7 @@ static inline uint8_t recv_data(char *buf, size_t len) {
     return HUMILDDLEWARE_OK;
 }
 
-uint8_t start(const char *ip, const unsigned short int port) {
+HC start(const char *ip, const unsigned short int port) {
     Broker broker;
     strcpy(broker.ip, ip);
     broker.port = port;
@@ -89,24 +90,24 @@ static inline Invocation unmarshall(char *payload, size_t len) {
     return invocation;
 }
 
-static inline uint8_t marshall(Invocation invocation, char* buf, size_t size_buf) {
+static inline uint8_t marshall(const Invocation* invocation, char* buf, size_t size_buf) {
     int r = -1;
 
-    switch (invocation.op) {
+    switch (invocation->op) {
     case PUBLISH:
         r = sprintf(
             buf,"OP:%i\nTPC:%s\nMSG:%s",
-            invocation.op,
-            invocation.tpc,
-            invocation.msg
+            invocation->op,
+            invocation->tpc,
+            invocation->msg
         );
         break;
     case SUBSCRIBE:
     case UNSUBSCRIBE:
         r = sprintf(
             buf,"OP:%i\nTPC:%s",
-            invocation.op,
-            invocation.tpc
+            invocation->op,
+            invocation->tpc
         );
         break;
     }
@@ -118,47 +119,47 @@ static inline uint8_t marshall(Invocation invocation, char* buf, size_t size_buf
     return HUMILDDLEWARE_OK;
 } 
 
-static inline uint8_t send_command(Invocation invocation) {
+static inline uint8_t send_command(const HC* hc, const Invocation *invocation) {
     char buf[BUF_LEN];
     marshall(invocation, buf, sizeof(buf));
-    return send_data(buf, strlen(buf)); 
+    return send_data(hc, buf, strlen(buf)); 
 }
 
-uint8_t publish(Invocation invocation) {
+uint8_t publish(const HC* hc, Invocation *invocation) {
     if (
-        invocation.msg == NULL ||
-        invocation.tpc == NULL
+        invocation->msg == NULL ||
+        invocation->tpc == NULL
     ) {
         perror("Null value");
         return NULL_VALUE_ERR;
     }
 
-    invocation.op = PUBLISH;
-    return send_command(invocation);
+    invocation->op = PUBLISH;
+    return send_command(hc, invocation);
 }
 
-uint8_t subscribe(Invocation invocation) {
+uint8_t subscribe(const HC *hc, Invocation *invocation) {
     if (
-        invocation.tpc == NULL
+        invocation->tpc == NULL
     ) {
         perror("Null value");
         return NULL_VALUE_ERR;
     }
 
-    invocation.op = SUBSCRIBE;
-    return send_command(invocation);
+    invocation->op = SUBSCRIBE;
+    return send_command(hc, invocation);
 }
 
-uint8_t unsubscribe(Invocation invocation) {
+uint8_t unsubscribe(const HC *hc, Invocation *invocation) {
      if (
-        invocation.tpc == NULL
+        invocation->tpc == NULL
     ) {
         perror("Null value");
         return NULL_VALUE_ERR;
     }
 
-    invocation.op = UNSUBSCRIBE;
-    return send_command(invocation);
+    invocation->op = UNSUBSCRIBE;
+    return send_command(hc, invocation);
 }
 
 Invocation invocation(const char *tpc, const char *msg) {
@@ -168,8 +169,8 @@ Invocation invocation(const char *tpc, const char *msg) {
     return invocation;
 }
 
-Invocation listen(const char *tpc) {
+Invocation listen(HC *hc, const char *tpc) {
     char buf[BUF_LEN];
-    recv_data(buf, sizeof(buf));
+    recv_data(hc, buf, sizeof(buf));
     return unmarshall(buf, strlen(buf));
 }

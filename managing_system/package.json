@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/nasc1mento/humilddleware/issues"
   },
-  "homepage": "https://github.com/nasc1mento/humilddleware#readme"
+  "homepage": "https://github.com/nasc1mento/humilddleware#readme",
+  "dependencies": {
+    "express": "^4.18.3"
+  }
 }
