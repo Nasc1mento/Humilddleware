@@ -1,16 +1,18 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include <esp_http_client.h>
 #include "wifi_info.h"
 #include "humilddleware.h"
 
 #define uS_TO_S_FACTOR                 1000000
 #define HUMILDDLEWARE_BROKER_IP       "192.168.0.111"
 #define HUMILDDLEWARE_BROKER_PORT      8889
-#define MANAGING_SYSTEM_ADDRESS       "192.168.0.111"
+#define MANAGING_SYSTEM_ADDRESS       "http://192.168.0.111"
 #define MANAGING_SYSTEM_PORT           8080
 
 unsigned int update_interval       = 10;
 RTC_DATA_ATTR int sleep_counter    = 0;
+char buf_from_mg[200];
 
 struct Payload {
   unsigned int distance;
@@ -37,13 +39,39 @@ void humilddleware_connect() {
   }
 }
 
-void executor(int sleepTime){
-  Serial.println(sleepTime);
-  update_interval = sleepTime;
-}
 
 int get_distance() {
   return random(0, 101);
+}
+
+esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
+    switch (evt->event_id) {
+    case HTTP_EVENT_ON_DATA:
+      strncpy(buf_from_mg, (char*)evt->data, evt->data_len);
+      break;
+    return ESP_OK;
+    }
+}
+
+void check_adaptation() {
+  if (!WiFi.isConnected()) {
+      Serial.println("Reconectando ao Wi-Fi...");
+      WiFi.reconnect();
+      delay(1000);
+    }
+
+  esp_http_client_config_t config = {
+    .url = MANAGING_SYSTEM_ADDRESS,
+    .event_handler = _http_event_handler,
+  };
+
+  esp_http_client_handle_t client = esp_http_client_init(&config);
+  esp_err_t ret = esp_http_client_perform(client);
+
+  if (ret == ESP_OK) {
+    sscanf(buf_from_mg, "%d", &update_interval);
+  }
+
 }
 
 void execute() {
@@ -61,20 +89,10 @@ void execute() {
   if (ret > 0 && ret < MSG_LEN) {
     Invocation to_send = invocation("topico", msg);
     publish(to_send);
-  
-    Invocation to_recv = listen("topico");
-    printf("OP:%i\nTPC:%s\nMSG:%s\n",to_recv.op, to_recv.tpc, to_recv.msg);
+    // Invocation to_recv = listen("topico");
+    // printf("OP:%i\nTPC:%s\nMSG:%s\n",to_recv.op, to_recv.tpc, to_recv.msg);
   }
-}
-
-void check_adaptation() {
-  if (!WiFi.isConnected()) {
-      Serial.println("Reconectando ao Wi-Fi...");
-      WiFi.reconnect();
-      delay(1000);
-    }
-
-    // TODO: Connect to managing system, get duty cycle and call executor
+  // check_adaptation();
 }
 
 void sleep() {
@@ -94,9 +112,7 @@ void setup() {
   humilddleware_connect();
 
   execute();
-
   sleep();
-  
 }
 
 void loop() {}
