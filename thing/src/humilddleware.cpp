@@ -75,7 +75,7 @@ HC start(const char *ip, const unsigned short int port) {
 
 static inline Invocation unmarshall(char *payload, size_t len) {
     char *token = strtok(payload, "\n");
-    Invocation invocation;
+    Invocation invocation = {};
 
     while (token != NULL) {
         if (strncmp(token, "OP:", 3) == 0) {
@@ -163,13 +163,13 @@ uint8_t unsubscribe(const HC *hc, Invocation *invocation) {
 }
 
 Invocation invocation(const char *tpc, const char *msg) {
-    Invocation invocation;
+    Invocation invocation = {};
     tpc == NULL ? strcpy(invocation.tpc, "") : strcpy(invocation.tpc, tpc);
     msg == NULL ? strcpy(invocation.msg, "") : strcpy(invocation.msg, msg);
     return invocation;
 }
 
-Invocation listen(HC *hc, const char *tpc) {
+Invocation listen(const HC *hc, const char *tpc) {
     char buf[BUF_LEN];
     recv_data(hc, buf, sizeof(buf));
     return unmarshall(buf, strlen(buf));

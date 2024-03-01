@@ -76,7 +76,7 @@ void check_adaptation(const int distance) {
   esp_err_t ret = esp_http_client_perform(client);
 
   if (ret == ESP_OK) {
-    sscanf(buf_from_mg, "%d", &duty_cycle); 
+    sscanf(buf_from_mg, "%u", &duty_cycle); 
   }
   Serial.print("Duty_cicle: ");
   Serial.println(duty_cycle);
