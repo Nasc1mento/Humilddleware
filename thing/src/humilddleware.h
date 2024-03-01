@@ -2,37 +2,42 @@
 #define HUMILDDLEWARE_H
 
 #include <unistd.h>
-// Literal Strings = 12 -> OP:\nTPC:\nMSG: + OP = 1 -> 1,2,3
-#define BUF_LEN 536
-#define TPC_LEN 50
-#define MSG_LEN 473
-#define MAX_ATTEMPTS 3
+
+// Literal Strings = 12 -> OP:\nTPC:\nMSG: + 1(OP)
+#define BUF_LEN             536
+#define TPC_LEN             50
+#define MSG_LEN             473
+#define MAX_ATTEMPTS        3
 
 enum Status {
-    HUMILDDLEWARE_OK = 0,
-    IPCONV_ERR,
-    INIT_ERR,
-    CONN_ERR,
-    SEND_ERR,
-    INCOMPLETE_SEND_ERR,
-    RECV_ERR,
-    NULL_VALUE_ERR,
-    BUFFER_OVERFLOW_ERR,
+    HUMILDDLEWARE_OK        = 0,
+    IPCONV_ERR              = 1,
+    INIT_ERR                = 2,
+    CONN_ERR                = 3,
+    SEND_ERR                = 4,
+    INCOMPLETE_SEND_ERR     = 5,
+    RECV_ERR                = 6,
+    NULL_VALUE_ERR          = 7,
+    BUFFER_OVERFLOW_ERR     = 8,
 };
+
+
+// struct HumilddlewareConnection {
+//     int fd;
+//     unsigned int port;
+//     unsigned int active:1;
+//     char buffer[BUF_LEN];
+// };
 
 struct Broker {
     char ip[IPADDR_STRLEN_MAX];
     unsigned short int port;
 };
 
-struct Config {
-    unsigned int duty_cicle;
-};
-
 enum Operation {
-    PUBLISH = 1,
-    SUBSCRIBE = 2,
-    UNSUBSCRIBE = 3
+    PUBLISH         = 1,
+    SUBSCRIBE       = 2,
+    UNSUBSCRIBE     = 3
 };
 
 struct Invocation {
@@ -42,11 +47,10 @@ struct Invocation {
 };
 
 typedef struct Broker Broker;
-typedef struct Config Config;
-typedef enum Operation Operarion;
+typedef enum Operation Operation;
 typedef struct Invocation Invocation;
 
-uint8_t start(const char *, unsigned short int);
+uint8_t start(const char *, const unsigned short int);
 uint8_t publish(Invocation);
 uint8_t subscribe(Invocation);
 uint8_t unsubscribe(Invocation);

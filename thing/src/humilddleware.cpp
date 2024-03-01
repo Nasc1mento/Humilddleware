@@ -1,22 +1,19 @@
 #include <sys/socket.h>
-#include <arpa/inet.h>
 #include "humilddleware.h"
 
-static int _fd = -1;
-static uint8_t attempts = 0;
-static Broker _broker = {0};
+static int _fd;
 
-static uint8_t run() {
+static uint8_t run (Broker broker) {
     struct sockaddr_in dst;
     memset(&dst, 0, sizeof(dst));
 
-    if (inet_pton(AF_INET, _broker.ip, &dst.sin_addr) <= 0) {
-        fprintf(stderr,"Failed to convert IP address: %s:%i",_broker.ip, _broker.port);
+    if (inet_pton(AF_INET, broker.ip, &dst.sin_addr) <= 0) {
+        fprintf(stderr,"Failed to convert IP address: %s:%i",broker.ip, broker.port);
         return IPCONV_ERR;
     }
     
     dst.sin_family = AF_INET;
-    dst.sin_port = htons(_broker.port);
+    dst.sin_port = htons(broker.port);
 
     if ((_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP)) < 0) {
         perror("Failed to create socket instance");
@@ -24,7 +21,7 @@ static uint8_t run() {
     }
 
     if (connect(_fd, (struct sockaddr *)&dst, sizeof(dst)) != 0) {
-        fprintf(stderr,"Failed to connect to %s:%i", _broker.ip, _broker.port);
+        fprintf(stderr,"Failed to connect to %s:%i", broker.ip, broker.port);
         close(_fd);
         return CONN_ERR;
     }
@@ -65,14 +62,14 @@ static inline uint8_t recv_data(char *buf, size_t len) {
     }
 
     buf[b] = '\0';
-    printf("Num bytes: %i\n", b);
     return HUMILDDLEWARE_OK;
 }
 
-uint8_t start(const char *ip, unsigned short int port) {
-    strcpy(_broker.ip, ip);
-    _broker.port = port;
-    return run();
+uint8_t start(const char *ip, const unsigned short int port) {
+    Broker broker;
+    strcpy(broker.ip, ip);
+    broker.port = port;
+    return run(broker);
 }
 
 static inline Invocation unmarshall(char *payload, size_t len) {
@@ -89,11 +86,10 @@ static inline Invocation unmarshall(char *payload, size_t len) {
         }
         token = strtok(NULL, "\n");
     }
-    printf("OP:%i\nTPC:%s\nMSG:%s\n",invocation.op, invocation.tpc, invocation.msg);
     return invocation;
 }
 
-static inline uint8_t marshall(Invocation invocation, char* buf, int size_buf) {
+static inline uint8_t marshall(Invocation invocation, char* buf, size_t size_buf) {
     int r = -1;
 
     switch (invocation.op) {
@@ -119,7 +115,6 @@ static inline uint8_t marshall(Invocation invocation, char* buf, int size_buf) {
         perror("Buffer overflow");
         return BUFFER_OVERFLOW_ERR;
     }
-
     return HUMILDDLEWARE_OK;
 } 
 
